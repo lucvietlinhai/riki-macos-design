@@ -580,17 +580,17 @@ const App: React.FC = () => {
   const isProActive = activeTab === 'thumbPro';
 
   return (
-    <div className={`relative w-screen h-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 ${isProActive ? 'bg-black text-white' : 'bg-slate-100 text-slate-900 dark:bg-zinc-950 dark:text-gray-300'}`}>
-        <div className={`flex-shrink-0 p-2 flex justify-center items-center gap-2 backdrop-blur-sm z-30 border-b relative transition-all duration-500 ${isProActive ? 'bg-zinc-950/80 border-orange-500/20' : 'bg-white/80 dark:bg-zinc-950/80 border-slate-200 dark:border-white/5'}`}>
+    <div className={`relative w-screen h-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 ${theme === 'dark' || isProActive ? 'bg-zinc-950 text-gray-300' : 'bg-slate-50 text-slate-900'}`}>
+        <div className={`flex-shrink-0 p-2 flex justify-center items-center gap-2 backdrop-blur-sm z-30 border-b relative transition-all duration-500 ${theme === 'dark' || isProActive ? 'bg-zinc-950/80 border-white/5' : 'bg-white/80 border-slate-200'}`}>
             <div className="absolute top-1/2 left-4 -translate-y-1/2 flex items-center gap-2">
                 <div className="hidden sm:block">
-                    <h1 className={`font-bold text-lg leading-tight transition-colors duration-500`} style={{ fontFamily: "'Lilita One', sans-serif", color: isProActive ? '#f97316' : '' }}>AI RIKI</h1>
-                    <p className={`text-xs transition-colors duration-500 ${isProActive ? 'text-orange-500/50' : 'text-slate-500 dark:text-zinc-400'}`}>Phiên bản sử dụng 3.0</p>
+                    <h1 className={`font-black text-lg leading-tight tracking-tighter transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-orange-500' : 'text-black'}`} style={{ fontFamily: "'Lilita One', sans-serif" }}>AI RIKI</h1>
+                    <p className={`text-[10px] font-bold uppercase transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-orange-500/50' : 'text-slate-400'}`}>Phiên bản 3.0</p>
                 </div>
             </div>
-            <div className={`relative flex items-center p-1 rounded-full border shadow-sm overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar transition-all duration-500 ${isProActive ? 'bg-black/70 border-orange-500/30' : 'bg-slate-100 dark:bg-zinc-900/70 border-slate-200 dark:border-white/10'}`}>
+            <div className={`relative flex items-center p-1 rounded-full border shadow-sm overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar transition-all duration-500 ${theme === 'dark' || isProActive ? 'bg-black/40 border-white/10' : 'bg-slate-100 border-slate-200'}`}>
                 <span
-                    className={`absolute h-[calc(100%-8px)] top-1 rounded-full transition-all duration-300 ease-in-out shadow-sm ${isProActive ? 'bg-orange-600' : 'bg-white dark:bg-orange-600'}`}
+                    className={`absolute h-[calc(100%-8px)] top-1 rounded-full transition-all duration-300 ease-in-out shadow-md ${theme === 'dark' || isProActive ? 'bg-orange-600' : 'bg-black'}`}
                     style={indicatorStyle}
                 />
                 {tabs.map((tab, index) => (
@@ -598,10 +598,10 @@ const App: React.FC = () => {
                         key={tab.id}
                         ref={el => { tabsRef.current[index] = el }}
                         onClick={() => setActiveTab(tab.id as Tab)}
-                        className={`relative z-10 px-4 py-1.5 text-sm font-bold rounded-full transition-colors duration-300 outline-none focus:ring-0 whitespace-nowrap ${
+                        className={`relative z-10 px-4 py-1.5 text-xs font-black rounded-full transition-colors duration-300 outline-none focus:ring-0 whitespace-nowrap ${
                             activeTab === tab.id
-                                ? (isProActive ? 'text-black' : 'text-slate-900 dark:text-white')
-                                : (isProActive ? 'text-orange-500/60 hover:text-orange-300' : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white')
+                                ? (theme === 'dark' || isProActive ? 'text-black' : 'text-white')
+                                : (theme === 'dark' || isProActive ? 'text-zinc-500 hover:text-white' : 'text-slate-500 hover:text-black')
                         }`}
                     >
                         {tab.label}

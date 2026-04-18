@@ -91,15 +91,16 @@ export const generateYoutubeThumbnail = async (config: ThumbnailConfig, model: A
 
   if (config.isReferenceMode && config.referenceTemplate) {
     styleInstruction = `
-      REFERENCE IMAGE ANALYSIS:
+      REFERENCE IMAGE ANALYSIS AND BLENDING:
       1. STYLE & COLOR: Copy the exact color palette, lighting, and artistic style from the attached "Reference Template".
-      2. SUBJECT REPLACEMENT: Identify the main character's position in the Reference Template. REMOVE that character and REPLACE it with the provided "Main Subject" image.
+      2. SUBJECT REPLACEMENT INTEGRATION: Identify the main character's position in the Reference Template. REMOVE that character and REPLACE it with the provided "Main Subject" image.
+      3. SEAMLESS BLENDING: Correct the lighting and shadows on the "Main Subject" to perfectly match the original background's environment. Ensure no harsh edges or visible crops.
     `;
     layoutInstruction = `
-      3. COMPOSITION: Place my character in the exact spatial position and scale as seen in the reference image.
+      4. COMPOSITION: Place my character in the exact spatial position and scale as seen in the reference image.
     `;
     fontInstruction = `
-      4. TYPOGRAPHY: Analyze the font style in the reference. Design the new text ("${config.headline}") to match that specific typography vibe.
+      5. TYPOGRAPHY: Analyze the font style in the reference. Design the new text ("${config.headline}") to match that specific typography vibe.
     `;
   } else {
     const styleMap = {
@@ -111,10 +112,27 @@ export const generateYoutubeThumbnail = async (config: ThumbnailConfig, model: A
       Luxury: "Premium, Gold and Black theme.",
       Vaporwave: "80s retro, pastel colors, glitch effects.",
       Gaming: "Esports style, intense action effects.",
-      Cinematic: "Movie poster style, wide color gamut, realistic depth of field."
+      Cinematic: "Movie poster style, wide color gamut, realistic depth of field.",
+      RetroTech: "Old CRT monitor effect, 8-bit vibes, classic tech aesthetic.",
+      OilPainting: "Classic oil painting texture, visible brushstrokes.",
+      PaperCut: "Layered paper cut-out style with soft drop shadows for depth.",
+      '3DRender': "High-end 3D octane render style, realistic materials."
     };
-    styleInstruction = `STYLE: ${styleMap[config.style] || styleMap.ModernEdu}. PRIMARY COLOR: ${config.primaryColor}.`;
-    layoutInstruction = `COMPOSITION: Place the main subject at ${config.position === 'Auto' ? 'the best position' : config.position}. ${config.strokeColor !== 'None' ? `Add a ${config.strokeColor} stroke/outline around the subject.` : ''}`;
+    
+    styleInstruction = `
+      VISUAL DESIGN:
+      - BASE STYLE: ${styleMap[config.style] || styleMap.ModernEdu}
+      - ATMOSPHERE: ${config.mood === 'Auto' ? 'Balanced' : config.mood} mood.
+      - LIGHTING: ${config.lighting === 'Standard' ? 'Natural' : `Apply a ${config.lighting} effect.`}
+      - COLOR PALETTE: Dominated by ${config.primaryColor}. ${config.colorGrade !== 'None' ? `Apply a ${config.colorGrade} color grading.` : ''}
+      - EFFECTS: ${config.vfx !== 'None' ? `Include ${config.vfx} visual elements for impact.` : ''}
+    `;
+    
+    layoutInstruction = `
+      COMPOSITION & LAYOUT:
+      - RULES: ${config.composition === 'Auto' ? 'Follow professional graphic design rules.' : `Use the ${config.composition} layout rule.`}
+      - SUBJECT POSITION: Place the main subject at ${config.position === 'Auto' ? 'the best position' : config.position}. ${config.strokeColor !== 'None' ? `Add a ${config.strokeColor} highlight/outline around the subject.` : ''}
+    `;
     
     const fontMap = {
       'Modern Sans': "Modern Sans-Serif font, high readability.",

@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import type { GeneratedImage, Tab } from '../types';
 import { useI18n } from '../i18n';
+import { useTheme } from '../theme';
 import { XIcon, DownloadIcon, TrashIcon, PhotoIcon, DropIcon } from '../constants';
 import { removeBackground } from '../utils/imageUtils';
 
@@ -21,29 +22,38 @@ const HistoryTabButton: React.FC<{
     isActive: boolean;
     onClick: () => void;
     count: number;
-}> = ({ label, isActive, onClick, count }) => (
-    <button
-        onClick={onClick}
-        className={`relative px-3 py-2 text-sm font-semibold rounded-md transition-colors ${
-            isActive
-                ? 'bg-slate-200/80 text-slate-800 dark:bg-zinc-700/80 dark:text-zinc-100'
-                : 'text-slate-500 hover:bg-slate-200/50 dark:text-zinc-400 dark:hover:bg-slate-900/50'
-        }`}
-    >
-        {label}
-        {count > 0 && (
-             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-white text-[10px] font-bold">
-                {count}
-            </span>
-        )}
-    </button>
-);
+}> = ({ label, isActive, onClick, count }) => {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+    
+    return (
+        <button
+            onClick={onClick}
+            className={`relative px-3 py-2 text-sm font-semibold rounded-md transition-colors ${
+                isActive
+                    ? 'bg-slate-200/80 text-slate-800 dark:bg-zinc-700/80 dark:text-zinc-100'
+                    : 'text-slate-500 hover:bg-slate-200/50 dark:text-zinc-400 dark:hover:bg-slate-900/50'
+            }`}
+        >
+            {label}
+            {count > 0 && (
+                <span className={`absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full ${isDark ? 'bg-orange-500 shadow-sm shadow-orange-500/50' : 'bg-black text-white shadow-sm shadow-black/50'} text-xs font-bold transition-colors duration-500`}>
+                    {count}
+                </span>
+            )}
+        </button>
+    );
+};
 
 
 export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, images, onImageClick, onDownloadClick, onDeleteClick, onReferenceClick, onUpdateImageSrc }) => {
     const { t } = useI18n();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [activeTab, setActiveTab] = useState<Tab>('design');
     const [removingId, setRemovingId] = useState<string | null>(null);
+
+    const buttonClass = `p-2 bg-black/40 text-white rounded-full ${isDark ? 'hover:bg-orange-500/80 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'hover:bg-black/10 shadow-lg'} backdrop-blur-sm transition-all`;
 
     const handleRemoveBg = async (e: React.MouseEvent, image: GeneratedImage) => {
         e.stopPropagation();
@@ -110,7 +120,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                                             <button 
                                                 onClick={(e) => { e.stopPropagation(); onReferenceClick(image); }} 
                                                 title={t('useAsReference')}
-                                                className="p-2 bg-black/40 text-white rounded-full hover:bg-orange-500/80 backdrop-blur-sm transition-all"
+                                                className={buttonClass}
                                             >
                                                 <PhotoIcon className="w-5 h-5" />
                                             </button>
@@ -120,7 +130,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                                                 onClick={(e) => handleRemoveBg(e, image)} 
                                                 title="Xoá nền (Tạo PNG trong suốt)"
                                                 disabled={removingId === image.id}
-                                                className="p-2 bg-black/40 text-white rounded-full hover:bg-orange-500/80 backdrop-blur-sm transition-all disabled:opacity-50"
+                                                className={`${buttonClass} disabled:opacity-50`}
                                             >
                                                 {removingId === image.id ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div> : <DropIcon className="w-5 h-5" />}
                                             </button>
@@ -128,8 +138,8 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                                          <button 
                                             onClick={(e) => { e.stopPropagation(); onDownloadClick(image.src); }} 
                                             title={t('downloadImage')}
-                                            className="p-2 bg-black/40 text-white rounded-full hover:bg-green-500/80 backdrop-blur-sm transition-all"
-                                        >
+                                            className={`${buttonClass} hover:bg-green-500/80`}
+                                         >
                                             <DownloadIcon className="w-5 h-5" />
                                         </button>
                                         <button 
@@ -138,7 +148,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                                                 onDeleteClick(image.id);
                                             }} 
                                             title={t('deleteImage')}
-                                            className="p-2 bg-black/40 text-white rounded-full hover:bg-red-500/80 backdrop-blur-sm transition-all"
+                                            className={`${buttonClass} hover:bg-red-500/80`}
                                         >
                                             <TrashIcon className="w-5 h-5" />
                                         </button>

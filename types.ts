@@ -53,7 +53,13 @@ export interface RemixSettings {
 export type ThumbnailStyle = 
   | 'ModernEdu' | 'HighContrast' | 'VibrantAnime' 
   | 'Cyberpunk' | 'Minimalist' | 'Luxury' 
-  | 'Vaporwave' | 'Gaming' | 'Cinematic';
+  | 'Vaporwave' | 'Gaming' | 'Cinematic' | 'RetroTech' | 'OilPainting' | 'PaperCut' | '3DRender';
+
+export type AtmosphereMood = 'Auto' | 'Energetic' | 'Mysterious' | 'Warm' | 'Professional' | 'Dark' | 'Whimsical' | 'Brutalist';
+export type VisualEffect = 'None' | 'Glitch' | 'SpeedLines' | 'Particles' | 'LensFlare' | 'NeonGlow' | 'Halftone' | 'DustOverlay';
+export type LightingStyle = 'Standard' | 'RimLight' | 'Backlight' | 'SoftGlow' | 'Volumetric' | 'Studio' | 'NeonRim';
+export type ColorGrade = 'None' | 'TealOrange' | 'BlackWhite' | 'RetroFilm' | 'Sepia' | 'Vivid' | 'Pastel';
+export type CompositionStyle = 'Auto' | 'RuleOfThirds' | 'Diagonal' | 'GoldenRatio' | 'Centered' | 'TopHeavy';
 
 export type SubjectPosition = 'Left' | 'Right' | 'Center' | 'Auto';
 export type StrokeColor = 'White' | 'Orange' | 'Yellow' | 'None';
@@ -66,6 +72,11 @@ export type SocialPlatform = 'Auto' | 'YouTube' | 'YouTubeShorts' | 'InstagramPo
 export interface ThumbnailConfig {
   isReferenceMode: boolean;
   style: ThumbnailStyle;
+  mood: AtmosphereMood;
+  vfx: VisualEffect;
+  lighting: LightingStyle;
+  colorGrade: ColorGrade;
+  composition: CompositionStyle;
   fontStyle: FontStyle;
   headline: string;
   subHeadline: string;

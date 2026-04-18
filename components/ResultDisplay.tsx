@@ -6,6 +6,7 @@ import { CanvasControls } from './CanvasControls';
 import { useI18n } from '../i18n';
 import { removeBackground } from '../utils/imageUtils';
 import confetti from 'canvas-confetti';
+import { useTheme } from '../theme';
 
 interface ResultDisplayProps {
   isLoading: boolean;
@@ -55,21 +56,23 @@ const ProgressBar: React.FC<{ progress: number; message: string }> = ({ progress
 
 const Placeholder: React.FC = () => {
     const { t } = useI18n();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     return (
         <div className="w-full h-full flex flex-col justify-center items-center text-center p-4 text-slate-600 dark:text-zinc-400">
-            <h3 className="text-lg font-semibold mb-2">{t('canvasReady')}</h3>
-            <div className="max-w-lg text-left mt-8 bg-white/10 dark:bg-black/20 backdrop-blur-lg rounded-2xl p-4 flex flex-start gap-4 shadow-2xl border border-white/20 dark:border-white/10">
+            <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-zinc-300' : 'text-slate-900'}`}>{t('canvasReady')}</h3>
+            <div className={`max-w-lg text-left mt-8 ${isDark ? 'bg-black/20 border-white/10' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-lg rounded-2xl p-4 flex flex-start gap-4 border`}>
                 <div className="flex-shrink-0 pt-0.5">
-                    <InfoCircleIcon className="w-6 h-6 text-orange-400 dark:text-yellow-400" />
+                    <InfoCircleIcon className={`w-6 h-6 ${isDark ? 'text-yellow-400' : 'text-black'}`} />
                 </div>
-                <div className="text-slate-700 dark:text-zinc-300">
+                <div className={isDark ? 'text-zinc-300' : 'text-slate-700'}>
                     <p className="text-sm">
                         <strong>{t('note')}</strong> {t('note1')}
                     </p>
                     <p className="text-sm mt-2">
                         {t('note2')}
                     </p>
-                    <p className="text-xs mt-2 text-center">{t('note3')} <a href="http://zalo.me/0987895715" target="_blank" className="font-bold text-orange-600 dark:text-yellow-300"><strong>{t('here')}</strong></a></p>
+                    <p className="text-xs mt-2 text-center">{t('note3')} <a href="http://zalo.me/0987895715" target="_blank" className={`font-bold ${isDark ? 'text-yellow-300' : 'text-black hover:underline'}`}><strong>{t('here')}</strong></a></p>
                 </div>
             </div>
         </div>
@@ -108,6 +111,7 @@ const ImageItem: React.FC<{
     } = props;
 
   const { t } = useI18n();
+  const { theme } = useTheme();
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   
   const handleRemoveBg = async (e: React.MouseEvent) => {
@@ -120,7 +124,7 @@ const ImageItem: React.FC<{
                 particleCount: 50,
                 spread: 40,
                 origin: { y: 0.8 },
-                colors: ['#f97316', '#fb923c', '#fdba74']
+                colors: theme === 'dark' ? ['#f97316', '#fb923c', '#fdba74'] : ['#000000', '#333333', '#666666']
           });
           onUpdateImageSrc(image.id, newSrc);
       } catch (err) {
@@ -200,7 +204,8 @@ const ImageItem: React.FC<{
     touchAction: 'none',
   };
 
-  const buttonClass = "p-2 bg-black/40 text-white rounded-full hover:bg-black/60 backdrop-blur-sm";
+  const isDark = theme === 'dark';
+  const buttonClass = `p-2 ${isDark ? 'bg-black/40 text-white border-white/10' : 'bg-white/80 text-black border-slate-200 shadow-sm'} rounded-full hover:scale-110 shadow-md transform border transition-all`;
 
   return (
     <div 
@@ -208,10 +213,10 @@ const ImageItem: React.FC<{
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         className={`group relative cursor-grab flex-shrink-0 transition-transform duration-300 ease-in-out w-[512px] h-[512px] 
-            ${isSelected ? 'ring-2 ring-orange-500 ring-offset-4 ring-offset-slate-200 dark:ring-offset-slate-900 rounded-lg' : ''}
+            ${isSelected ? `ring-2 ${isDark ? 'ring-orange-500' : 'ring-black'} ring-offset-4 ${isDark ? 'ring-offset-slate-900' : 'ring-offset-slate-200'} rounded-lg shadow-2xl` : ''}
           `}
     >
-        <div className="relative w-full h-full bg-black/20 rounded-md overflow-hidden shadow-lg dark:shadow-2xl shadow-slate-400/40 dark:shadow-black/40">
+        <div className={`relative w-full h-full ${isDark ? 'bg-black/20' : 'bg-white'} rounded-md overflow-hidden shadow-lg dark:shadow-2xl shadow-slate-400/40 dark:shadow-black/40`}>
             <img src={image.src} alt={t('generatedMascot')} className="w-full h-full object-contain pointer-events-none select-none" />
             <div className="absolute top-3 right-3 flex flex-wrap justify-end p-2 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full max-w-[80%]">
                 {onUpdateImageSrc && (
@@ -220,10 +225,10 @@ const ImageItem: React.FC<{
                         onTouchStart={e => e.stopPropagation()}
                         onClick={handleRemoveBg} 
                         disabled={isRemovingBg}
-                        className={`${buttonClass} hover:bg-orange-500/80 disabled:opacity-50`} 
+                        className={`${buttonClass} ${isDark ? 'hover:bg-orange-500/80' : 'hover:bg-black/10'} disabled:opacity-50`} 
                         title="Xoá phông nền" 
                     >
-                        {isRemovingBg ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <DropIcon className="w-5 h-5" />}
+                        {isRemovingBg ? <div className={`w-5 h-5 border-2 ${isDark ? 'border-white/30 border-t-white' : 'border-black/30 border-t-black'} rounded-full animate-spin`}></div> : <DropIcon className="w-5 h-5" />}
                     </button>
                 )}
                 {onDelete && (
@@ -234,15 +239,15 @@ const ImageItem: React.FC<{
                             e.stopPropagation(); 
                             onDelete(image.id); 
                         }} 
-                        className={`${buttonClass} hover:bg-red-500/80`} 
+                        className={`${buttonClass} hover:bg-red-500/80 hover:text-white`} 
                         title={t('deleteImage') || 'Xóa ảnh'} 
                     > 
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" width="24" height="24" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </button>
                 )}
-                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
-                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onViewDetail(image.src)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
-                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onDownload(image.src)} className={`${buttonClass} hover:bg-green-500/80`} title={t('downloadImage')} > <DownloadIcon className="w-5 h-5" /> </button>
+                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onEdit(image)} className={`${buttonClass} ${isDark ? 'hover:bg-orange-500/80' : 'hover:bg-black/10'}`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
+                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onViewDetail(image.src)} className={`${buttonClass} ${isDark ? 'hover:bg-orange-500/80' : 'hover:bg-black/10'}`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
+                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onDownload(image.src)} className={`${buttonClass} hover:bg-green-500/80 hover:text-white`} title={t('downloadImage')} > <DownloadIcon className="w-5 h-5" /> </button>
             </div>
         </div>
     </div>

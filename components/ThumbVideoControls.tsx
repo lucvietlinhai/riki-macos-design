@@ -4,6 +4,7 @@ import { LoadingSpinner, WandIcon, LandscapeIcon, PortraitIcon, TypographyIcon }
 import { characters } from '../data/characters';
 import { useI18n } from '../i18n';
 import { Switch } from './Switch';
+import { useTheme } from '../theme';
 
 interface ThumbVideoControlsProps {
   postContent: string;
@@ -31,6 +32,8 @@ export const ThumbVideoControls: React.FC<ThumbVideoControlsProps> = ({
   onIncludeTextChange,
 }) => {
   const { t } = useI18n();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [showCharacterPopover, setShowCharacterPopover] = React.useState(false);
   const characterButtonRef = React.useRef<HTMLButtonElement>(null);
   const characterPopoverRef = React.useRef<HTMLDivElement>(null);
@@ -85,7 +88,7 @@ export const ThumbVideoControls: React.FC<ThumbVideoControlsProps> = ({
                             <button
                                 key={char.id}
                                 onClick={() => { onCharacterChange(char.id); setShowCharacterPopover(false); }}
-                                className={`flex items-center justify-between p-1.5 rounded-md w-full text-left transition-colors ${characterId === char.id ? 'bg-orange-600 text-white' : 'text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                                className={`flex items-center justify-between p-1.5 rounded-md w-full text-left transition-colors ${characterId === char.id ? (isDark ? 'bg-orange-600 text-white' : 'bg-black text-white') : 'text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
                                 title={char.id === 'hankimo' || char.id === 'rikimi' ? "Đang bảo trì" : ""}
                             >
                                 <div className="flex items-center gap-2">
@@ -93,7 +96,7 @@ export const ThumbVideoControls: React.FC<ThumbVideoControlsProps> = ({
                                     <span className={`text-sm font-semibold ${char.id === 'hankimo' || char.id === 'rikimi' ? 'opacity-50' : ''}`}>{char.name}</span>
                                 </div>
                                 {(char.id === 'hankimo' || char.id === 'rikimi') && (
-                                    <span className="text-[8px] text-orange-500 font-bold bg-orange-100 dark:bg-orange-900/40 px-1.5 py-0.5 rounded uppercase ml-1">Bảo trì</span>
+                                    <span className={`text-[8px] font-bold ${isDark ? 'text-orange-500 bg-orange-100 dark:bg-orange-900/40' : 'text-slate-500 bg-slate-100'} px-1.5 py-0.5 rounded uppercase ml-1`}>Bảo trì</span>
                                 )}
                             </button>
                         ))}
@@ -144,7 +147,7 @@ export const ThumbVideoControls: React.FC<ThumbVideoControlsProps> = ({
             <button
               onClick={onGenerate}
               disabled={isLoading || !isReady}
-              className="bg-orange-500 text-white p-2.5 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all transform hover:scale-105"
+              className={`text-white p-2.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${isDark ? 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/30 hover:shadow-orange-500/40' : 'bg-black hover:bg-zinc-800 shadow-black/10 hover:shadow-black/20'}`}
               title={t('generate')}
             >
               {isLoading ? <LoadingSpinner /> : <WandIcon className="w-5 h-5" />}

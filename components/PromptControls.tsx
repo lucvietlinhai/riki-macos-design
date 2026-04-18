@@ -6,6 +6,7 @@ import { characters } from '../data/characters';
 import { useI18n, Language } from '../i18n';
 import type { Translation } from '../i18n';
 import { enhancePromptWithAI } from '../services/geminiService';
+import { useTheme } from '../theme';
 
 interface PromptControlsProps {
   prompt: string;
@@ -66,6 +67,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
   } = props;
     
   const { t, language } = useI18n();
+  const { theme } = useTheme();
   const [showSettingsPopover, setShowSettingsPopover] = useState(false);
   const [showCharacterPopover, setShowCharacterPopover] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -382,7 +384,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                     <button 
                         onClick={handleMagicPrompt}
                         disabled={isEnhancing || !prompt.trim()}
-                        className="flex items-center gap-1 text-[10px] sm:text-xs font-bold bg-gradient-to-r from-orange-400 to-amber-500 text-white px-2.5 py-1 rounded-md shadow-sm hover:from-orange-500 hover:to-amber-600 transition-all disabled:opacity-50 disabled:grayscale"
+                        className={`flex items-center gap-1 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-md shadow-sm transition-all disabled:opacity-50 disabled:grayscale ${theme === 'dark' ? 'bg-gradient-to-r from-orange-400 to-amber-500 text-white hover:from-orange-500 hover:to-amber-600' : 'bg-black text-white hover:bg-zinc-800'}`}
                         title="Tự động viết mô tả chi tiết bằng AI"
                     >
                         {isEnhancing ? <SpinnerIcon className="w-3 h-3 animate-spin" /> : <span>✨</span>}
@@ -391,7 +393,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                 </div>
                 
                 <textarea
-                    className="flex-grow w-full p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-xl resize-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 outline-none text-sm text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-sm"
+                    className={`flex-grow w-full p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-xl resize-none focus:ring-2 outline-none text-sm text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-sm ${theme === 'dark' ? 'focus:ring-orange-500/50 focus:border-orange-500' : 'focus:ring-black/20 focus:border-black'}`}
                     placeholder={isReferenceMode ? t('promptPlaceholderRef') : t('promptPlaceholder')}
                     value={prompt}
                     onChange={(e) => onPromptChange(e.target.value)}
@@ -440,7 +442,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                 <button
                     onClick={onGenerate}
                     disabled={isLoading || !isReady || (isReferenceMode && referenceImages.length === 0)}
-                    className="w-full py-3.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
+                    className={`w-full py-3.5 font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase tracking-wide text-sm ${theme === 'dark' ? 'bg-orange-600 hover:bg-orange-500 text-white shadow-orange-500/20' : 'bg-black hover:bg-zinc-800 text-white shadow-black/10'}`}
                 >
                     {isLoading ? <LoadingSpinner /> : <WandIcon className="w-5 h-5" />}
                     <span>{t('generate')}</span>
