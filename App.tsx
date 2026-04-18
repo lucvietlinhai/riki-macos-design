@@ -115,9 +115,14 @@ const App: React.FC = () => {
     if (apiKeyInput.trim()) {
       localStorage.setItem('gemini_api_key', apiKeyInput.trim());
       setShowApiKeyModal(false);
-      setApiKeyInput('');
     }
   };
+
+  useEffect(() => {
+     if (showApiKeyModal) {
+         setApiKeyInput(localStorage.getItem('gemini_api_key') || '');
+     }
+  }, [showApiKeyModal]);
 
   useEffect(() => {
     const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
@@ -607,6 +612,7 @@ const App: React.FC = () => {
                 <Header 
                     onHistoryClick={() => setShowHistoryModal(true)} 
                     onShortcutsClick={() => setShowShortcutsModal(true)}
+                    onApiKeyClick={() => setShowApiKeyModal(true)}
                     isProMode={isProActive}
                     model={globalModel}
                     onModelChange={setGlobalModel}
@@ -664,8 +670,8 @@ const App: React.FC = () => {
         {showApiKeyModal && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 text-slate-800 dark:text-slate-200">
                 <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden max-w-md w-full border border-slate-200 dark:border-white/10 p-6 flex flex-col gap-4">
-                    <h2 className="text-xl font-bold">Yêu cầu thiết lập API Key</h2>
-                    <p className="text-sm dark:text-slate-400">Hệ thống chưa tìm thấy Gemini API Key. Vui lòng nhập API Key của bạn để tiếp tục sử dụng.</p>
+                    <h2 className="text-xl font-bold">Thiết lập API Key</h2>
+                    <p className="text-sm dark:text-slate-400">Vui lòng nhập Gemini API Key của bạn để sử dụng ứng dụng.</p>
                     <input 
                         type="password"
                         placeholder="Nhập API Key ở đây..."

@@ -314,6 +314,15 @@ export const PhotoIcon: React.FC<{className?: string}> = ({ className }) => (
   </svg>
 );
 
+// Tabler Icon: icon-key
+export const KeyIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <path d="M16.555 3.843l3.602 3.602a2.877 2.877 0 0 1 0 4.069l-2.643 2.643a2.877 2.877 0 0 1 -4.069 0l-.301 -.301l-6.558 6.558a2 2 0 0 1 -1.414 .586h-2.172v-2.172a2 2 0 0 1 .586 -1.414l.813 -.813v-1.586h-2v-2h2.586l1.243 -1.243l-.301 -.301a2.877 2.877 0 0 1 0 -4.069l2.643 -2.643a2.877 2.877 0 0 1 4.069 0z" />
+        <path d="M15 9h.01" />
+    </svg>
+);
+
 // Tabler Icon: icon-check
 export const CheckIcon: React.FC<{className?: string}> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">

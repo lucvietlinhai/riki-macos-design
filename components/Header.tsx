@@ -4,7 +4,7 @@ import { useI18n, Language } from '../i18n';
 import { VietnamFlag, UKFlag, JapanFlag, IndonesiaFlag } from './FlagIcons';
 import { useTheme } from '../theme';
 import { SunIcon, MoonIcon } from './ThemeIcons';
-import { HistoryIcon, InfoCircleIcon, CheckIcon, SettingsIcon } from '../constants';
+import { HistoryIcon, InfoCircleIcon, CheckIcon, SettingsIcon, KeyIcon } from '../constants';
 import type { AIModel } from '../types';
 
 // Tabler Icon: icon-chevron-down
@@ -25,12 +25,13 @@ const flagComponents: Record<Language, React.FC<{ className?: string }>> = {
 interface HeaderProps {
   onHistoryClick: () => void;
   onShortcutsClick: () => void;
+  onApiKeyClick: () => void;
   isProMode?: boolean;
   model: AIModel;
   onModelChange: (model: AIModel) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick, isProMode, model, onModelChange }) => {
+export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick, onApiKeyClick, isProMode, model, onModelChange }) => {
   const { language, setLanguage, t } = useI18n();
   const { theme, toggleTheme } = useTheme();
   const [isLangPopoverOpen, setIsLangPopoverOpen] = useState(false);
@@ -182,6 +183,14 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
             )}
         </div>
 
+        <button
+          onClick={onApiKeyClick}
+          className={buttonClasses}
+          aria-label={'API Key'}
+          title={'Setup API Key'}
+      >
+          <KeyIcon className={`w-5 h-5 ${iconColor}`} />
+      </button>
         <button
           onClick={onHistoryClick}
           className={buttonClasses}
