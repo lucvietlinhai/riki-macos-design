@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import type { ImageFile, BackgroundOption, CharacterId, NumVariations, AspectRatio, DesignMode, RemixSettings } from '../types';
-import { LoadingSpinner, SendIcon, SettingsIcon, PencilIcon, AttachmentIcon, WandIcon, UploadIcon, CheckIcon } from '../constants';
+import { LoadingSpinner, SendIcon, SettingsIcon, PencilIcon, AttachmentIcon, WandIcon, UploadIcon, CheckIcon, SpinnerIcon } from '../constants';
 import { characters } from '../data/characters';
 import { useI18n, Language } from '../i18n';
 import type { Translation } from '../i18n';
+import { enhancePromptWithAI } from '../services/geminiService';
 
 interface PromptControlsProps {
   prompt: string;
@@ -64,15 +65,34 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
     remixSettings, onRemixSettingsChange
   } = props;
     
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [showSettingsPopover, setShowSettingsPopover] = useState(false);
   const [showCharacterPopover, setShowCharacterPopover] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const settingsPopoverRef = useRef<HTMLDivElement>(null);
   const characterButtonRef = useRef<HTMLButtonElement>(null);
   const characterPopoverRef = useRef<HTMLDivElement>(null);
+
+  const handleMagicPrompt = async () => {
+      if (!prompt.trim() || isEnhancing) return;
+      setIsEnhancing(true);
+      try {
+          const enhanced = await enhancePromptWithAI(prompt, characterId, language);
+          onPromptChange(enhanced);
+      } catch (e: any) {
+          console.error("Enhance failed", e);
+          if (e.message && e.message.includes('API_KEY_MISSING')) {
+              window.dispatchEvent(new CustomEvent('showApiKeyModal'));
+          } else {
+              alert("Lỗi khi kết nối với AI (Magic Prompt). Vui lòng kiểm tra API Key hoặc thử lại sau!");
+          }
+      } finally {
+          setIsEnhancing(false);
+      }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -354,10 +374,22 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             )}
 
             {/* 2. Main Prompt Textarea (Expanded) */}
-            <div className="flex-grow flex flex-col min-h-0">
-                <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2 uppercase tracking-wide">
-                    {isReferenceMode ? t('customPromptLabel') : t('descriptionLabel')}
-                </label>
+            <div className="flex-grow flex flex-col min-h-0 relative">
+                <div className="flex justify-between items-end mb-2">
+                    <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wide">
+                        {isReferenceMode ? t('customPromptLabel') : t('descriptionLabel')}
+                    </label>
+                    <button 
+                        onClick={handleMagicPrompt}
+                        disabled={isEnhancing || !prompt.trim()}
+                        className="flex items-center gap-1 text-[10px] sm:text-xs font-bold bg-gradient-to-r from-orange-400 to-amber-500 text-white px-2.5 py-1 rounded-md shadow-sm hover:from-orange-500 hover:to-amber-600 transition-all disabled:opacity-50 disabled:grayscale"
+                        title="Tự động viết mô tả chi tiết bằng AI"
+                    >
+                        {isEnhancing ? <SpinnerIcon className="w-3 h-3 animate-spin" /> : <span>✨</span>}
+                        <span>Magic</span>
+                    </button>
+                </div>
+                
                 <textarea
                     className="flex-grow w-full p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-xl resize-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 outline-none text-sm text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-sm"
                     placeholder={isReferenceMode ? t('promptPlaceholderRef') : t('promptPlaceholder')}

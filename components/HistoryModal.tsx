@@ -2,7 +2,8 @@
 import React, { useState, useMemo } from 'react';
 import type { GeneratedImage, Tab } from '../types';
 import { useI18n } from '../i18n';
-import { XIcon, DownloadIcon, TrashIcon, PhotoIcon } from '../constants';
+import { XIcon, DownloadIcon, TrashIcon, PhotoIcon, DropIcon } from '../constants';
+import { removeBackground } from '../utils/imageUtils';
 
 interface HistoryModalProps {
     isOpen: boolean;
@@ -12,6 +13,7 @@ interface HistoryModalProps {
     onDownloadClick: (src: string) => void;
     onDeleteClick: (id: string) => void;
     onReferenceClick: (image: GeneratedImage) => void;
+    onUpdateImageSrc?: (id: string, src: string) => void;
 }
 
 const HistoryTabButton: React.FC<{
@@ -38,9 +40,25 @@ const HistoryTabButton: React.FC<{
 );
 
 
-export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, images, onImageClick, onDownloadClick, onDeleteClick, onReferenceClick }) => {
+export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, images, onImageClick, onDownloadClick, onDeleteClick, onReferenceClick, onUpdateImageSrc }) => {
     const { t } = useI18n();
     const [activeTab, setActiveTab] = useState<Tab>('design');
+    const [removingId, setRemovingId] = useState<string | null>(null);
+
+    const handleRemoveBg = async (e: React.MouseEvent, image: GeneratedImage) => {
+        e.stopPropagation();
+        if (!onUpdateImageSrc || removingId) return;
+        setRemovingId(image.id);
+        try {
+            const newSrc = await removeBackground(image.src);
+            onUpdateImageSrc(image.id, newSrc);
+            // Replace alert with silent success in iframe
+        } catch (err) {
+            console.error("Remove bg failed", err);
+        } finally {
+            setRemovingId(null);
+        }
+    };
     
     const imageCounts = useMemo(() => {
         return images.reduce((acc, img) => {
@@ -87,25 +105,38 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                                         className="w-full h-full object-contain"
                                         onClick={() => onImageClick(image)}
                                     />
-                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-wrap items-center justify-center p-2 gap-2">
                                         {activeTab === 'design' && (
                                             <button 
-                                                onClick={() => onReferenceClick(image)} 
+                                                onClick={(e) => { e.stopPropagation(); onReferenceClick(image); }} 
                                                 title={t('useAsReference')}
                                                 className="p-2 bg-black/40 text-white rounded-full hover:bg-orange-500/80 backdrop-blur-sm transition-all"
                                             >
                                                 <PhotoIcon className="w-5 h-5" />
                                             </button>
                                         )}
+                                        {onUpdateImageSrc && (
+                                            <button 
+                                                onClick={(e) => handleRemoveBg(e, image)} 
+                                                title="Xoá nền (Tạo PNG trong suốt)"
+                                                disabled={removingId === image.id}
+                                                className="p-2 bg-black/40 text-white rounded-full hover:bg-orange-500/80 backdrop-blur-sm transition-all disabled:opacity-50"
+                                            >
+                                                {removingId === image.id ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div> : <DropIcon className="w-5 h-5" />}
+                                            </button>
+                                        )}
                                          <button 
-                                            onClick={() => onDownloadClick(image.src)} 
+                                            onClick={(e) => { e.stopPropagation(); onDownloadClick(image.src); }} 
                                             title={t('downloadImage')}
                                             className="p-2 bg-black/40 text-white rounded-full hover:bg-green-500/80 backdrop-blur-sm transition-all"
                                         >
                                             <DownloadIcon className="w-5 h-5" />
                                         </button>
-                                         <button 
-                                            onClick={() => { if (window.confirm(t('deleteConfirm'))) onDeleteClick(image.id)}} 
+                                        <button 
+                                            onClick={(e) => { 
+                                                e.stopPropagation(); 
+                                                onDeleteClick(image.id);
+                                            }} 
                                             title={t('deleteImage')}
                                             className="p-2 bg-black/40 text-white rounded-full hover:bg-red-500/80 backdrop-blur-sm transition-all"
                                         >

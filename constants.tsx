@@ -129,6 +129,14 @@ export const ArtboardIcon: React.FC<{className?: string}> = ({ className }) => (
   </svg>
 );
 
+export const DropIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2l0 11.5" /><path d="M11 10.51l-4.7 -4.7" /><path d="M10 15a2 2 0 1 0 4 0c0 -1.1 -.9 -2 -2 -2s-2 .9 -2 2z" /><path d="M3 21h18" /></svg>
+);
+
+export const SpinnerIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3a9 9 0 1 0 9 9" /></svg>
+);
+
 // Tabler Icon: icon-maximize
 export const MaximizeIcon: React.FC<{className?: string}> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">

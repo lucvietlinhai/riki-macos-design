@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { get, set } from 'idb-keyval';
 import { PromptControls } from './components/PromptControls';
 import { ResultDisplay } from './components/ResultDisplay';
 import { SketchModal } from './components/SketchModal';
@@ -48,6 +49,33 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+  const [isDbLoaded, setIsDbLoaded] = useState<boolean>(false);
+
+  // Load from IndexedDB on mount
+  useEffect(() => {
+    get<GeneratedImage[]>('rikimo_generated_images').then((val) => {
+        if (val && Array.isArray(val)) {
+            setGeneratedImages(val);
+            // Calculate a high topZ so new images stack correctly
+            const maxZ = val.reduce((max, img) => Math.max(max, img.z || 0), 0);
+            setTopZ(maxZ + 1);
+        }
+    }).catch(err => {
+        console.error("Failed to load images from DB:", err);
+    }).finally(() => {
+        setIsDbLoaded(true);
+    });
+  }, []);
+
+  // Save to IndexedDB when generatedImages change
+  useEffect(() => {
+    if (isDbLoaded) {
+        set('rikimo_generated_images', generatedImages).catch(err => {
+            console.error("Failed to save images to DB:", err);
+        });
+    }
+  }, [generatedImages, isDbLoaded]);
+
   const [progress, setProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [isSketch, setIsSketch] = useState<boolean>(false);
@@ -123,6 +151,10 @@ const App: React.FC = () => {
     setGeneratedImages(prev => [...prev, ...imagesWithSource]);
   };
   
+  const handleUpdateImageSrc = useCallback((id: string, newSrc: string) => {
+      setGeneratedImages(prev => prev.map(img => img.id === id ? { ...img, src: newSrc } : img));
+  }, []);
+
    const handleGenerate = useCallback((lang: Language) => {
     if (isLoading || !primaryMascot || !faceReference || (!prompt.trim() && !isSketch && referenceImages.length === 0) || !primaryMascot.base64 || !faceReference.base64) {
       return;
@@ -531,6 +563,8 @@ const App: React.FC = () => {
                           onSelectImage={handleSelectImage}
                           isSpacePanning={isSpacePanning}
                           onViewDetail={handleOpenLightbox}
+                          onUpdateImageSrc={handleUpdateImageSrc}
+                          onDelete={handleDelete}
                         />
                     </main>
                 </div>
@@ -600,6 +634,7 @@ const App: React.FC = () => {
                 onDownloadClick={handleDownload}
                 onDeleteClick={handleDelete}
                 onReferenceClick={handleSelectForReference}
+                onUpdateImageSrc={handleUpdateImageSrc}
             />
         )}
 

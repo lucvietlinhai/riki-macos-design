@@ -38,6 +38,30 @@ const cropImageToSelection = async (base64Image: string, selection: SelectionBox
     });
 };
 
+export const enhancePromptWithAI = async (shortPrompt: string, characterId: string, lang: Language): Promise<string> => {
+    const ai = getAIClient();
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: `You are an expert AI image generation prompt engineer. The user wants to generate an image of a mascot character named "${characterId}".
+User's brief idea: "${shortPrompt}"
+
+Expand this brief idea into a highly detailed, descriptive, and vivid paragraph written in English (regardless of the input language) optimized for an image generation AI.
+Include descriptions of the character's pose, distinct facial expression, the camera angle (e.g., dynamic low angle, 3/4 view), dramatic lighting (e.g., neon rim lights, cinematic shadows), and the environment/background. Keep it under 60 words.
+
+IMPORTANT: Return ONLY the enhanced prompt string. No conversational text, no quotes, no explanations.`
+        });
+        const enhanced = response.text || shortPrompt;
+        if (enhanced.includes("Failed to call") || enhanced.trim() === "") {
+            throw new Error(`AI generated error fallback: ${enhanced}`);
+        }
+        return enhanced.trim().replace(/^"/, '').replace(/"$/, '');
+    } catch (e) {
+        console.error("Failed to enhance prompt", e);
+        throw e; // Throw so UI can catch it and handle appropriately
+    }
+};
+
 export const generateYoutubeThumbnail = async (config: ThumbnailConfig, model: AIModel, language: Language): Promise<GeneratedResult> => {
     const ai = getAIClient();
 

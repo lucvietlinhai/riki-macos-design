@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from 'react';
-import { ArtboardIcon, DownloadIcon, PlusIcon, MinusIcon, RefreshIcon, InfoCircleIcon, MaximizeIcon, WandIcon } from '../constants';
+import { ArtboardIcon, DownloadIcon, PlusIcon, MinusIcon, RefreshIcon, InfoCircleIcon, MaximizeIcon, WandIcon, DropIcon } from '../constants';
 import type { GeneratedImage, ResultDisplayHandle } from '../types';
 import { CanvasControls } from './CanvasControls';
 import { useI18n } from '../i18n';
+import { removeBackground } from '../utils/imageUtils';
+import confetti from 'canvas-confetti';
 
 interface ResultDisplayProps {
   isLoading: boolean;
@@ -21,6 +23,8 @@ interface ResultDisplayProps {
   onSelectImage: (id: string) => void;
   isSpacePanning: boolean;
   onViewDetail: (src: string) => void;
+  onUpdateImageSrc?: (id: string, newSrc: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const ProgressBar: React.FC<{ progress: number; message: string }> = ({ progress, message }) => {
@@ -95,14 +99,38 @@ const ImageItem: React.FC<{
   isSelected: boolean;
   onSelectImage: (id: string) => void;
   onViewDetail: (src: string) => void;
+  onUpdateImageSrc?: (id: string, newSrc: string) => void;
+  onDelete?: (id: string) => void;
 }> = (props) => {
   const { 
       image, onDownload, onImageMove, onBringToFront, onEdit, scale, isSelected, 
-      onSelectImage, onViewDetail
+      onSelectImage, onViewDetail, onUpdateImageSrc, onDelete
     } = props;
 
   const { t } = useI18n();
+  const [isRemovingBg, setIsRemovingBg] = useState(false);
   
+  const handleRemoveBg = async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!onUpdateImageSrc || isRemovingBg) return;
+      setIsRemovingBg(true);
+      try {
+          const newSrc = await removeBackground(image.src);
+          confetti({
+                particleCount: 50,
+                spread: 40,
+                origin: { y: 0.8 },
+                colors: ['#f97316', '#fb923c', '#fdba74']
+          });
+          onUpdateImageSrc(image.id, newSrc);
+      } catch (err) {
+          console.error("Remove bg failed", err);
+          // Alert removed because it blocks in iframe
+      } finally {
+          setIsRemovingBg(false);
+      }
+  };
+
   const dragStartPosRef = useRef({ x: 0, y: 0 });
   const itemStartPosRef = useRef({ x: 0, y: 0 });
   const isDraggingRef = useRef(false);
@@ -185,11 +213,36 @@ const ImageItem: React.FC<{
     >
         <div className="relative w-full h-full bg-black/20 rounded-md overflow-hidden shadow-lg dark:shadow-2xl shadow-slate-400/40 dark:shadow-black/40">
             <img src={image.src} alt={t('generatedMascot')} className="w-full h-full object-contain pointer-events-none select-none" />
-            <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <button onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
-                <button onClick={() => onViewDetail(image.src)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
-                {/* Use image.src directly for download to ensure high quality */}
-                <button onClick={() => onDownload(image.src)} className={`${buttonClass} hover:bg-green-500/80`} title={t('downloadImage')} > <DownloadIcon className="w-5 h-5" /> </button>
+            <div className="absolute top-3 right-3 flex flex-wrap justify-end p-2 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full max-w-[80%]">
+                {onUpdateImageSrc && (
+                    <button 
+                        onMouseDown={e => e.stopPropagation()}
+                        onTouchStart={e => e.stopPropagation()}
+                        onClick={handleRemoveBg} 
+                        disabled={isRemovingBg}
+                        className={`${buttonClass} hover:bg-orange-500/80 disabled:opacity-50`} 
+                        title="Xoá phông nền" 
+                    >
+                        {isRemovingBg ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <DropIcon className="w-5 h-5" />}
+                    </button>
+                )}
+                {onDelete && (
+                    <button 
+                        onMouseDown={e => e.stopPropagation()}
+                        onTouchStart={e => e.stopPropagation()}
+                        onClick={(e) => { 
+                            e.stopPropagation(); 
+                            onDelete(image.id); 
+                        }} 
+                        className={`${buttonClass} hover:bg-red-500/80`} 
+                        title={t('deleteImage') || 'Xóa ảnh'} 
+                    > 
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" width="24" height="24" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                    </button>
+                )}
+                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
+                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onViewDetail(image.src)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
+                <button onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onClick={() => onDownload(image.src)} className={`${buttonClass} hover:bg-green-500/80`} title={t('downloadImage')} > <DownloadIcon className="w-5 h-5" /> </button>
             </div>
         </div>
     </div>
@@ -356,6 +409,8 @@ export const ResultDisplay = forwardRef<ResultDisplayHandle, ResultDisplayProps>
                 isSelected={selectedImageId === image.id}
                 onSelectImage={onSelectImage}
                 onViewDetail={onViewDetail}
+                onUpdateImageSrc={props.onUpdateImageSrc}
+                onDelete={props.onDelete}
             />
         ))}
          {pendingImages.map(image => (
