@@ -74,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
   };
 
   const handleModelChange = async (newModel: AIModel) => {
-    if (newModel === 'gemini-3.1-flash-image-preview') {
+    if (newModel === 'gemini-3.1-flash-image-preview' && (window as any).aistudio) {
         try {
             const hasKey = await (window as any).aistudio.hasSelectedApiKey();
             
@@ -99,6 +99,9 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
         }
     } else {
         onModelChange(newModel);
+        if (newModel === 'gemini-3.1-flash-image-preview' && !localStorage.getItem('gemini_api_key')) {
+            onApiKeyClick();
+        }
     }
     
     setIsModelPopoverOpen(false);
@@ -106,9 +109,13 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
 
   const handleSelectKey = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-        await (window as any).aistudio.openSelectKey();
-    } catch (e) { console.error(e); }
+    if ((window as any).aistudio) {
+        try {
+            await (window as any).aistudio.openSelectKey();
+        } catch (e) { console.error(e); }
+    } else {
+        onApiKeyClick();
+    }
   };
 
   const buttonClasses = isProMode 

@@ -8,8 +8,15 @@ const getAIClient = () => {
     // 2. Fallback to process.env.GEMINI_API_KEY (Server/Antigravity environment)
     // 3. Fallback to process.env.API_KEY
     // 4. Fallback to VITE_GEMINI_API_KEY (Client-side env fallback if somehow exposed)
-    const key = localStorage.getItem('gemini_api_key') || process.env.GEMINI_API_KEY || process.env.API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
-    if (!key) throw new Error("API_KEY_MISSING");
+    const key = localStorage.getItem('gemini_api_key') 
+                || (typeof process !== 'undefined' ? (process.env.GEMINI_API_KEY || process.env.API_KEY) : undefined) 
+                || import.meta.env.VITE_GEMINI_API_KEY;
+                
+    if (!key) {
+        // Since we are likely in a browser, trigger the API key modal event if needed
+        window.dispatchEvent(new CustomEvent('showApiKeyModal'));
+        throw new Error("API_KEY_MISSING");
+    }
     return new GoogleGenAI({ apiKey: key });
 };
 
