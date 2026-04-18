@@ -215,33 +215,33 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
     return (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4" onClick={onClose} aria-modal="true">
             <div 
-                className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden"
+                className="bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-white/10 rounded-xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-                <header className="flex-shrink-0 p-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                    <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">{t('editImage')}</h2>
-                    <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors" aria-label={t('close')}>
+                <header className="flex-shrink-0 p-3 border-b border-slate-200 dark:border-white/10 flex justify-between items-center">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-zinc-200">{t('editImage')}</h2>
+                    <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors" aria-label={t('close')}>
                         <XIcon className="w-5 h-5" />
                     </button>
                 </header>
                 <div className="flex-grow flex flex-col p-2 sm:p-3 gap-3 overflow-hidden">
-                    <div className="flex-shrink-0 bg-white dark:bg-slate-900/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between gap-4 flex-wrap">
-                         <div className="flex items-center gap-1 bg-slate-200 dark:bg-slate-700/50 p-1 rounded-md">
-                            <button onClick={() => setTool('brush')} title={t('pen')} className={`p-2 rounded-md transition-colors ${tool === 'brush' ? 'bg-white text-indigo-500 dark:bg-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-600'}`} aria-pressed={tool === 'brush'}><PencilIcon className="w-5 h-5" /></button>
-                            <button onClick={() => setTool('eraser')} title={t('eraser')} className={`p-2 rounded-md transition-colors ${tool === 'eraser' ? 'bg-white text-indigo-500 dark:bg-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-600'}`} aria-pressed={tool === 'eraser'}><EraserIcon className="w-5 h-5" /></button>
+                    <div className="flex-shrink-0 bg-white dark:bg-zinc-950/50 p-2 rounded-lg border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-between gap-4 flex-wrap">
+                         <div className="flex items-center gap-1 bg-slate-200 dark:bg-zinc-700/50 p-1 rounded-md">
+                            <button onClick={() => setTool('brush')} title={t('pen')} className={`p-2 rounded-md transition-colors ${tool === 'brush' ? 'bg-white text-orange-500 dark:bg-zinc-950 dark:text-white shadow-sm' : 'text-slate-500 dark:text-zinc-400 hover:bg-white/50 dark:hover:bg-slate-600'}`} aria-pressed={tool === 'brush'}><PencilIcon className="w-5 h-5" /></button>
+                            <button onClick={() => setTool('eraser')} title={t('eraser')} className={`p-2 rounded-md transition-colors ${tool === 'eraser' ? 'bg-white text-orange-500 dark:bg-zinc-950 dark:text-white shadow-sm' : 'text-slate-500 dark:text-zinc-400 hover:bg-white/50 dark:hover:bg-slate-600'}`} aria-pressed={tool === 'eraser'}><EraserIcon className="w-5 h-5" /></button>
                         </div>
                         <div className="flex items-center gap-2">
-                            <label htmlFor="brushSizeModal" className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">{t('brushSize')}</label>
-                            <input id="brushSizeModal" type="range" min="5" max="100" value={brushSize} onChange={(e) => setBrushSize(Number(e.target.value))} className="w-24 sm:w-32 accent-indigo-500" />
-                            <span className="text-sm w-8 text-center bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-1 py-0.5 rounded-md border border-slate-300 dark:border-slate-600">{brushSize}</span>
+                            <label htmlFor="brushSizeModal" className="text-sm font-medium text-slate-600 dark:text-zinc-300 whitespace-nowrap">{t('brushSize')}</label>
+                            <input id="brushSizeModal" type="range" min="5" max="100" value={brushSize} onChange={(e) => setBrushSize(Number(e.target.value))} className="w-24 sm:w-32 accent-orange-500" />
+                            <span className="text-sm w-8 text-center bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-zinc-200 px-1 py-0.5 rounded-md border border-slate-300 dark:border-zinc-600">{brushSize}</span>
                         </div>
-                        <div className="flex items-center gap-1 bg-slate-200 dark:bg-slate-700/50 p-1 rounded-md">
-                            <button onClick={handleUndo} title={t('undo')} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-50" disabled={history.length <= 1}> <UndoIcon className="w-5 h-5" /> </button>
-                            <button onClick={handleClear} title={t('clear')} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-600"> <TrashIcon className="w-5 h-5" /> </button>
+                        <div className="flex items-center gap-1 bg-slate-200 dark:bg-zinc-700/50 p-1 rounded-md">
+                            <button onClick={handleUndo} title={t('undo')} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-50" disabled={history.length <= 1}> <UndoIcon className="w-5 h-5" /> </button>
+                            <button onClick={handleClear} title={t('clear')} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-600"> <TrashIcon className="w-5 h-5" /> </button>
                         </div>
                     </div>
 
-                    <div ref={containerRef} className="relative flex-grow bg-slate-200 dark:bg-slate-900 rounded-lg overflow-hidden checkerboard flex justify-center items-center">
+                    <div ref={containerRef} className="relative flex-grow bg-slate-200 dark:bg-zinc-950 rounded-lg overflow-hidden checkerboard flex justify-center items-center">
                         <canvas ref={bgCanvasRef} className="absolute"/>
                         <canvas 
                             ref={drawCanvasRef} 
@@ -252,10 +252,10 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
                     </div>
                     
                     <div className="flex-shrink-0 flex flex-col gap-2">
-                        <textarea rows={2} className="w-full bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-slate-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-all placeholder-slate-500" placeholder={t('editPlaceholder')} value={editPrompt} onChange={(e) => setEditPrompt(e.target.value)} />
+                        <textarea rows={2} className="w-full bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-white/10 rounded-lg p-2 text-slate-800 dark:text-gray-200 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all placeholder-slate-500" placeholder={t('editPlaceholder')} value={editPrompt} onChange={(e) => setEditPrompt(e.target.value)} />
                         <div className="flex items-center gap-3">
-                            <button onClick={onClose} className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 font-bold py-2.5 px-4 rounded-lg transition-all"> {t('cancel')} </button>
-                            <button onClick={handleSave} disabled={isLoading || !editPrompt.trim() || history.length <= 1} className="w-full flex items-center justify-center gap-3 bg-indigo-500 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button onClick={onClose} className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-zinc-600 dark:hover:bg-slate-500 dark:text-zinc-200 font-bold py-2.5 px-4 rounded-lg transition-all"> {t('cancel')} </button>
+                            <button onClick={handleSave} disabled={isLoading || !editPrompt.trim() || history.length <= 1} className="w-full flex items-center justify-center gap-3 bg-orange-500 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                                 {isLoading ? <><LoadingSpinner /><span>{t('editing')}</span></> : <><WandIcon className="w-5 h-5" /><span>{t('generateChanges')}</span></>}
                             </button>
                         </div>

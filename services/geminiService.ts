@@ -4,8 +4,12 @@ import type { ImageFile, GeneratedResult, ThumbnailConfig, AspectRatio, Backgrou
 import { translations, Language } from "../i18n";
 
 const getAIClient = () => {
-    const key = process.env.API_KEY;
-    if (!key) throw new Error("API_KEY not found.");
+    // 1. Try local storage first (user provided)
+    // 2. Fallback to process.env.GEMINI_API_KEY (Server/Antigravity environment)
+    // 3. Fallback to process.env.API_KEY
+    // 4. Fallback to VITE_GEMINI_API_KEY (Client-side env fallback if somehow exposed)
+    const key = localStorage.getItem('gemini_api_key') || process.env.GEMINI_API_KEY || process.env.API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!key) throw new Error("API_KEY_MISSING");
     return new GoogleGenAI({ apiKey: key });
 };
 

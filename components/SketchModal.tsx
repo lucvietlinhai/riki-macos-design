@@ -244,58 +244,58 @@ export const SketchModal: React.FC<SketchModalProps> = ({ onClose, onSave }) => 
     const canvasCursorStyle = tool === 'pen' ? pencilCursor : 'crosshair';
 
     const containerClasses = isFullScreen 
-        ? "bg-white dark:bg-slate-800 w-full h-full flex flex-col"
-        : "bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-2xl w-full max-w-4xl flex flex-col h-[95vh]";
+        ? "bg-white dark:bg-zinc-900 w-full h-full flex flex-col"
+        : "bg-white dark:bg-zinc-900 border border-slate-300 dark:border-white/10 rounded-lg shadow-2xl w-full max-w-4xl flex flex-col h-[95vh]";
 
     return (
-        <div className={isFullScreen ? "fixed inset-0 bg-white dark:bg-slate-900 z-50 flex flex-col p-0" : "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"} aria-modal="true" onContextMenu={(e) => e.preventDefault()} onClick={isFullScreen ? undefined : onClose}>
+        <div className={isFullScreen ? "fixed inset-0 bg-white dark:bg-zinc-950 z-50 flex flex-col p-0" : "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"} aria-modal="true" onContextMenu={(e) => e.preventDefault()} onClick={isFullScreen ? undefined : onClose}>
             <div className={containerClasses} onClick={e => e.stopPropagation()}>
-                <header className="p-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center flex-shrink-0">
-                    <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">{t('sketchpad')}</h2>
+                <header className="p-3 border-b border-slate-200 dark:border-white/10 flex justify-between items-center flex-shrink-0">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-zinc-200">{t('sketchpad')}</h2>
                     <div className="flex items-center gap-2">
-                        <button onClick={toggleFullScreen} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title={isFullScreen ? t('exitFullscreen') : t('fullscreen')}>
+                        <button onClick={toggleFullScreen} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title={isFullScreen ? t('exitFullscreen') : t('fullscreen')}>
                              {isFullScreen ? <MinimizeIcon className="w-5 h-5" /> : <MaximizeIcon className="w-5 h-5" />}
                         </button>
-                        <button onClick={onClose} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" aria-label={t('close')}>
+                        <button onClick={onClose} className="p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" aria-label={t('close')}>
                             <XIcon className="w-5 h-5"/>
                         </button>
                     </div>
                 </header>
                 
-                <div className="flex-shrink-0 p-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                <div className="flex-shrink-0 p-2 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-900/50 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                     {/* Tools */}
-                    <div className="flex items-center gap-1 bg-slate-200 dark:bg-slate-900/50 p-1 rounded-md">
-                       <button onClick={() => setTool('pen')} title={t('pen')} className={`p-2 rounded-md transition-colors ${tool === 'pen' ? 'bg-white text-indigo-500 dark:bg-slate-700 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700'}`} aria-pressed={tool === 'pen'}><PencilIcon className="w-5 h-5" /></button>
-                       <button onClick={() => setTool('eraser')} title={t('eraser')} className={`p-2 rounded-md transition-colors ${tool === 'eraser' ? 'bg-white text-indigo-500 dark:bg-slate-700 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700'}`} aria-pressed={tool === 'eraser'}><EraserIcon className="w-5 h-5" /></button>
+                    <div className="flex items-center gap-1 bg-slate-200 dark:bg-zinc-950/50 p-1 rounded-md">
+                       <button onClick={() => setTool('pen')} title={t('pen')} className={`p-2 rounded-md transition-colors ${tool === 'pen' ? 'bg-white text-orange-500 dark:bg-zinc-700 dark:text-white shadow-sm' : 'text-slate-500 dark:text-zinc-400 hover:bg-white/50 dark:hover:bg-slate-700'}`} aria-pressed={tool === 'pen'}><PencilIcon className="w-5 h-5" /></button>
+                       <button onClick={() => setTool('eraser')} title={t('eraser')} className={`p-2 rounded-md transition-colors ${tool === 'eraser' ? 'bg-white text-orange-500 dark:bg-zinc-700 dark:text-white shadow-sm' : 'text-slate-500 dark:text-zinc-400 hover:bg-white/50 dark:hover:bg-slate-700'}`} aria-pressed={tool === 'eraser'}><EraserIcon className="w-5 h-5" /></button>
                     </div>
                     
                     {/* Colors */}
                     <div className="flex items-center gap-1.5">
                         {grayscalePalette.map(color => (
-                            <button key={color} onClick={() => { setBrushColor(color); setTool('pen'); }} className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${brushColor === color && tool === 'pen' ? 'border-indigo-500 ring-2 ring-indigo-300' : 'border-slate-300 dark:border-slate-600'}`} style={{ backgroundColor: color }} aria-label={`${t('selectColor')} ${color}`} />
+                            <button key={color} onClick={() => { setBrushColor(color); setTool('pen'); }} className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${brushColor === color && tool === 'pen' ? 'border-orange-500 ring-2 ring-orange-300' : 'border-slate-300 dark:border-zinc-600'}`} style={{ backgroundColor: color }} aria-label={`${t('selectColor')} ${color}`} />
                         ))}
                     </div>
 
                      {/* Brush Size */}
                     <div className="flex items-center gap-2">
-                        <label htmlFor="brushSize" className="text-sm font-medium text-slate-500 dark:text-slate-400 sr-only">{t('brushSize')}</label>
+                        <label htmlFor="brushSize" className="text-sm font-medium text-slate-500 dark:text-zinc-400 sr-only">{t('brushSize')}</label>
                         <PencilIcon className="w-4 h-4 text-slate-400"/>
-                        <input id="brushSize" type="range" min="1" max="50" value={brushSize} onChange={(e) => setBrushSize(Number(e.target.value))} className="w-24 accent-indigo-500" />
-                        <span className="text-sm w-8 text-center text-slate-600 dark:text-slate-300">{brushSize}</span>
+                        <input id="brushSize" type="range" min="1" max="50" value={brushSize} onChange={(e) => setBrushSize(Number(e.target.value))} className="w-24 accent-orange-500" />
+                        <span className="text-sm w-8 text-center text-slate-600 dark:text-zinc-300">{brushSize}</span>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1 bg-slate-200 dark:bg-slate-900/50 p-1 rounded-md">
-                        <button onClick={handleUndo} title={`${t('undo')} (Ctrl+Z)`} className="p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={history.length <= 1}>
+                    <div className="flex items-center gap-1 bg-slate-200 dark:bg-zinc-950/50 p-1 rounded-md">
+                        <button onClick={handleUndo} title={`${t('undo')} (Ctrl+Z)`} className="p-2 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-white/50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={history.length <= 1}>
                             <UndoIcon className="w-5 h-5" />
                         </button>
-                        <button onClick={handleClear} title={t('clearAll')} className="p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700 transition-colors">
+                        <button onClick={handleClear} title={t('clearAll')} className="p-2 rounded-md text-slate-500 dark:text-zinc-400 hover:bg-white/50 dark:hover:bg-slate-700 transition-colors">
                             <TrashIcon className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
 
-                <div className="p-2 sm:p-4 flex-grow relative bg-slate-100 dark:bg-slate-900/50">
+                <div className="p-2 sm:p-4 flex-grow relative bg-slate-100 dark:bg-zinc-950/50">
                     <canvas
                         ref={canvasRef}
                         className={`w-full h-full bg-white shadow-inner ${isFullScreen ? '' : 'rounded-md'}`}
@@ -309,25 +309,25 @@ export const SketchModal: React.FC<SketchModalProps> = ({ onClose, onSave }) => 
                         onTouchMove={draw}
                     />
                 </div>
-                <footer className={`p-3 border-t border-slate-200 dark:border-slate-700 flex justify-end items-center gap-4 flex-shrink-0 flex-wrap bg-slate-50 dark:bg-slate-800/50 ${isFullScreen ? '' : 'rounded-b-lg'}`}>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 text-center flex-grow hidden sm:block">
+                <footer className={`p-3 border-t border-slate-200 dark:border-white/10 flex justify-end items-center gap-4 flex-shrink-0 flex-wrap bg-slate-50 dark:bg-zinc-900/50 ${isFullScreen ? '' : 'rounded-b-lg'}`}>
+                    <div className="text-xs text-slate-500 dark:text-zinc-400 text-center flex-grow hidden sm:block">
                         {t('shortcuts')}: 
-                        <kbd className="font-sans px-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md">Ctrl+Z</kbd> {t('shortcutUndo')}
+                        <kbd className="font-sans px-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-zinc-300 bg-slate-200 dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600 rounded-md">Ctrl+Z</kbd> {t('shortcutUndo')}
                         <span className="mx-1">|</span>
-                        <kbd className="font-sans px-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md">Ctrl+S</kbd> {t('shortcutSave')}
+                        <kbd className="font-sans px-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-zinc-300 bg-slate-200 dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600 rounded-md">Ctrl+S</kbd> {t('shortcutSave')}
                         <span className="mx-1">|</span>
-                        <kbd className="font-sans px-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md">Esc</kbd> {t('shortcutClose')}
+                        <kbd className="font-sans px-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-zinc-300 bg-slate-200 dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600 rounded-md">Esc</kbd> {t('shortcutClose')}
                     </div>
                      <button 
                         onClick={onClose}
                         title={`${t('close')} (Esc)`}
-                        className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 border border-slate-300 dark:border-slate-500">
+                        className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-zinc-600 dark:hover:bg-slate-500 dark:text-zinc-200 border border-slate-300 dark:border-zinc-500">
                         {t('close')}
                     </button>
                     <button 
                         onClick={handleSave}
                         title={`${t('saveAndUse')} (Ctrl+S)`}
-                        className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-indigo-500 text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-600">
+                        className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-orange-500 text-white shadow-md shadow-orange-500/30 hover:bg-orange-600">
                         {t('saveAndUse')}
                     </button>
                 </footer>

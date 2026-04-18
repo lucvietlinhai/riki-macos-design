@@ -193,24 +193,24 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
   // Render Sidebar Version
   if (isSidebar) {
     return (
-        <div className="flex flex-col h-full gap-4 p-4 text-slate-700 dark:text-slate-300">
+        <div className="flex flex-col h-full gap-4 p-4 text-slate-700 dark:text-zinc-300">
             {/* 0. Design Mode Selector */}
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <div className="flex bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl">
                  <button 
                     onClick={() => { onDesignModeChange('free'); onReferenceImagesChange([]); }}
-                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'free' ? 'bg-white dark:bg-slate-600 shadow-sm text-indigo-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}
+                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'free' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
                  >
                      {t('modeFree')}
                  </button>
                  <button 
                     onClick={() => { onDesignModeChange('concept'); onReferenceImagesChange([]); }}
-                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'concept' ? 'bg-white dark:bg-slate-600 shadow-sm text-indigo-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}
+                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'concept' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
                  >
                      {t('modeConcept')}
                  </button>
                  <button 
                     onClick={() => { onDesignModeChange('reference'); onReferenceImagesChange([]); }}
-                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'reference' ? 'bg-white dark:bg-slate-600 shadow-sm text-indigo-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}
+                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'reference' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
                  >
                      {t('modeReference')}
                  </button>
@@ -219,21 +219,21 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             {/* 1. Character & Basic Settings Header */}
             <div className="flex items-center justify-between">
                 <div className="relative">
-                    <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                         <img src={characters.find(c => c.id === characterId)?.face} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 object-cover" alt="Current character" />
+                    <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
+                         <img src={characters.find(c => c.id === characterId)?.face} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
                          <span className="font-bold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
                     </button>
                      {showCharacterPopover && (
-                        <div ref={characterPopoverRef} className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl p-2 space-y-1 border border-slate-200 dark:border-slate-700 z-50">
+                        <div ref={characterPopoverRef} className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-zinc-900 rounded-xl shadow-xl p-2 space-y-1 border border-slate-200 dark:border-white/10 z-50">
                             {characters.map(char => (
                                 <button
                                     key={char.id}
                                     onClick={() => { onCharacterChange(char.id); setShowCharacterPopover(false); }}
-                                    className={`flex items-center justify-between p-2 rounded-lg w-full text-left transition-colors ${characterId === char.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                                    className={`flex items-center justify-between p-2 rounded-lg w-full text-left transition-colors ${characterId === char.id ? 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                                     title={char.id === 'hankimo' || char.id === 'rikimi' ? "Đang bảo trì" : ""}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <img src={char.face} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700" alt={char.name} />
+                                        <img src={char.face} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
                                         <span className={`text-sm font-medium ${char.id === 'hankimo' || char.id === 'rikimi' ? 'opacity-50' : ''}`}>{char.name}</span>
                                     </div>
                                     {(char.id === 'hankimo' || char.id === 'rikimi') && (
@@ -246,11 +246,11 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                 </div>
 
                  <div className="relative">
-                    <button ref={settingsButtonRef} onClick={() => setShowSettingsPopover(p => !p)} className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm text-slate-500 dark:text-slate-400">
+                    <button ref={settingsButtonRef} onClick={() => setShowSettingsPopover(p => !p)} className="p-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm text-slate-500 dark:text-zinc-400">
                         <SettingsIcon className="w-5 h-5" />
                     </button>
                     {showSettingsPopover && (
-                        <div ref={settingsPopoverRef} className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl p-4 space-y-4 border border-slate-200 dark:border-slate-700 z-50">
+                        <div ref={settingsPopoverRef} className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-zinc-900 rounded-xl shadow-xl p-4 space-y-4 border border-slate-200 dark:border-white/10 z-50">
                              <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('aspectRatio')}</label>
                                 <div className={`grid grid-cols-3 gap-1 ${isConceptMode ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -258,7 +258,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                                     <button
                                         key={option.id}
                                         onClick={() => onAspectRatioChange(option.id)}
-                                        className={`px-2 py-1.5 text-xs rounded-md transition-colors border ${aspectRatio === option.id ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500/30 dark:text-indigo-300' : 'border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                                        className={`px-2 py-1.5 text-xs rounded-md transition-colors border ${aspectRatio === option.id ? 'bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-900/30 dark:border-orange-500/30 dark:text-orange-300' : 'border-slate-100 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                                     >
                                         {t(option.labelKey)}
                                     </button>
@@ -268,12 +268,12 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('background')}</label>
-                                <div className="flex bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg">
+                                <div className="flex bg-slate-100 dark:bg-zinc-950/50 p-1 rounded-lg">
                                     {backgroundOptions.map((option) => (
                                     <button
                                         key={option.id}
                                         onClick={() => onBackgroundChange(option.id)}
-                                        className={`flex-1 py-1.5 text-xs rounded-md transition-all ${background === option.id ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                        className={`flex-1 py-1.5 text-xs rounded-md transition-all ${background === option.id ? 'bg-white dark:bg-zinc-700 shadow-sm text-slate-800 dark:text-zinc-200 font-medium' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                                     >
                                         {t(option.labelKey)}
                                     </button>
@@ -282,12 +282,12 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('numImages')}</label>
-                                <div className="flex bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg">
+                                <div className="flex bg-slate-100 dark:bg-zinc-950/50 p-1 rounded-lg">
                                     {numVariationsOptions.map((option) => (
                                     <button
                                         key={option.id}
                                         onClick={() => onNumVariationsChange(option.id)}
-                                        className={`flex-1 py-1.5 text-xs rounded-md transition-all ${numVariations === option.id ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                        className={`flex-1 py-1.5 text-xs rounded-md transition-all ${numVariations === option.id ? 'bg-white dark:bg-zinc-700 shadow-sm text-slate-800 dark:text-zinc-200 font-medium' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                                     >
                                         {option.label}
                                     </button>
@@ -303,12 +303,12 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             {isReferenceMode && (
                  <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wide">{t('uploadRefImage')}</label>
-                        <div onClick={handleUploadClick} className="relative aspect-[4/3] bg-indigo-50 dark:bg-indigo-900/20 border-2 border-dashed border-indigo-200 dark:border-indigo-700/50 rounded-xl flex items-center justify-center cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-all group overflow-hidden">
+                        <label className="text-xs font-bold text-orange-500 dark:text-orange-400 uppercase tracking-wide">{t('uploadRefImage')}</label>
+                        <div onClick={handleUploadClick} className="relative aspect-[4/3] bg-orange-50 dark:bg-orange-900/20 border-2 border-dashed border-orange-200 dark:border-orange-700/50 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-all group overflow-hidden">
                              {referenceImages.length > 0 ? (
                                  <img src={referenceImages[0].base64} alt="Ref" className="w-full h-full object-cover" />
                              ) : (
-                                 <div className="flex flex-col items-center gap-2 text-indigo-400 dark:text-indigo-300">
+                                 <div className="flex flex-col items-center gap-2 text-orange-400 dark:text-orange-300">
                                      <UploadIcon className="w-8 h-8" />
                                      <span className="text-xs font-medium">{t('attachImage')}</span>
                                  </div>
@@ -321,33 +321,33 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                                 </div>
                              )}
                         </div>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 italic text-center px-2">
+                        <p className="text-[10px] text-slate-500 dark:text-zinc-400 italic text-center px-2">
                             {t('refModeHint')}
                         </p>
                     </div>
 
                     {/* Remix Options */}
-                    <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50 space-y-2">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-1">{t('remixOptionsLabel')}</label>
+                    <div className="p-3 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-slate-200 dark:border-white/10/50 space-y-2">
+                        <label className="text-xs font-bold text-slate-600 dark:text-zinc-300 uppercase tracking-wider block mb-1">{t('remixOptionsLabel')}</label>
                         
                         <div 
                             className="flex items-center gap-2 cursor-pointer group"
                             onClick={() => onRemixSettingsChange({...remixSettings, keepBackground: !remixSettings.keepBackground})}
                         >
-                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${remixSettings.keepBackground ? 'bg-indigo-500 border-indigo-500' : 'border-slate-400 dark:border-slate-600 bg-white dark:bg-slate-800'}`}>
+                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${remixSettings.keepBackground ? 'bg-orange-500 border-orange-500' : 'border-slate-400 dark:border-zinc-600 bg-white dark:bg-zinc-900'}`}>
                                 {remixSettings.keepBackground && <CheckIcon className="w-3 h-3 text-white" />}
                             </div>
-                            <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-indigo-500 dark:group-hover:text-indigo-400">{t('keepBackground')}</span>
+                            <span className="text-xs text-slate-600 dark:text-zinc-300 group-hover:text-orange-500 dark:group-hover:text-orange-400">{t('keepBackground')}</span>
                         </div>
 
                         <div 
                             className="flex items-center gap-2 cursor-pointer group"
                             onClick={() => onRemixSettingsChange({...remixSettings, keepPose: !remixSettings.keepPose})}
                         >
-                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${remixSettings.keepPose ? 'bg-indigo-500 border-indigo-500' : 'border-slate-400 dark:border-slate-600 bg-white dark:bg-slate-800'}`}>
+                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${remixSettings.keepPose ? 'bg-orange-500 border-orange-500' : 'border-slate-400 dark:border-zinc-600 bg-white dark:bg-zinc-900'}`}>
                                 {remixSettings.keepPose && <CheckIcon className="w-3 h-3 text-white" />}
                             </div>
-                            <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-indigo-500 dark:group-hover:text-indigo-400">{t('keepPose')}</span>
+                            <span className="text-xs text-slate-600 dark:text-zinc-300 group-hover:text-orange-500 dark:group-hover:text-orange-400">{t('keepPose')}</span>
                         </div>
                     </div>
                  </div>
@@ -355,11 +355,11 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
 
             {/* 2. Main Prompt Textarea (Expanded) */}
             <div className="flex-grow flex flex-col min-h-0">
-                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
+                <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2 uppercase tracking-wide">
                     {isReferenceMode ? t('customPromptLabel') : t('descriptionLabel')}
                 </label>
                 <textarea
-                    className="flex-grow w-full p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl resize-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-sm"
+                    className="flex-grow w-full p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-xl resize-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 outline-none text-sm text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-sm"
                     placeholder={isReferenceMode ? t('promptPlaceholderRef') : t('promptPlaceholder')}
                     value={prompt}
                     onChange={(e) => onPromptChange(e.target.value)}
@@ -370,10 +370,10 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             {/* 3. Reference Images (Only show for Free/Concept mode here, Ref mode handles above) */}
              {!isReferenceMode && referenceImages.length > 0 && (
                 <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{t('referenceImage')}</label>
-                    <div className="flex flex-wrap gap-2 p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                    <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wide">{t('referenceImage')}</label>
+                    <div className="flex flex-wrap gap-2 p-2 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-slate-100 dark:border-white/10/50">
                         {referenceImages.map((image, index) => (
-                            <div key={index} className="relative w-16 h-16 bg-white dark:bg-slate-700 rounded-lg p-1 shadow-sm border border-slate-200 dark:border-slate-600 group">
+                            <div key={index} className="relative w-16 h-16 bg-white dark:bg-zinc-700 rounded-lg p-1 shadow-sm border border-slate-200 dark:border-zinc-600 group">
                                 <img src={image.base64} alt={`Ref ${index + 1}`} className="w-full h-full object-contain rounded-md" />
                                 <button
                                     onClick={() => handleRemoveReferenceImage(index)}
@@ -393,13 +393,13 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             )}
 
             {/* 4. Action Buttons */}
-            <div className="flex flex-col gap-3 mt-auto pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex flex-col gap-3 mt-auto pt-2 border-t border-slate-200 dark:border-white/5">
                 {!isReferenceMode && (
                     <div className="grid grid-cols-2 gap-3">
-                         <button onClick={handleUploadClick} className="flex items-center justify-center gap-2 p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                         <button onClick={handleUploadClick} className="flex items-center justify-center gap-2 p-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-xl text-slate-600 dark:text-zinc-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                             <AttachmentIcon className="w-4 h-4"/> <span>{t('attachImage')}</span>
                         </button>
-                        <button onClick={onOpenSketchModal} className="flex items-center justify-center gap-2 p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                        <button onClick={onOpenSketchModal} className="flex items-center justify-center gap-2 p-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-xl text-slate-600 dark:text-zinc-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                             <PencilIcon className="w-4 h-4"/> <span>{t('sketch')}</span>
                         </button>
                     </div>
@@ -408,7 +408,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                 <button
                     onClick={onGenerate}
                     disabled={isLoading || !isReady || (isReferenceMode && referenceImages.length === 0)}
-                    className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
+                    className="w-full py-3.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
                 >
                     {isLoading ? <LoadingSpinner /> : <WandIcon className="w-5 h-5" />}
                     <span>{t('generate')}</span>

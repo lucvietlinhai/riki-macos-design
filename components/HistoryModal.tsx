@@ -24,13 +24,13 @@ const HistoryTabButton: React.FC<{
         onClick={onClick}
         className={`relative px-3 py-2 text-sm font-semibold rounded-md transition-colors ${
             isActive
-                ? 'bg-slate-200/80 text-slate-800 dark:bg-slate-700/80 dark:text-slate-100'
-                : 'text-slate-500 hover:bg-slate-200/50 dark:text-slate-400 dark:hover:bg-slate-900/50'
+                ? 'bg-slate-200/80 text-slate-800 dark:bg-zinc-700/80 dark:text-zinc-100'
+                : 'text-slate-500 hover:bg-slate-200/50 dark:text-zinc-400 dark:hover:bg-slate-900/50'
         }`}
     >
         {label}
         {count > 0 && (
-             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-white text-[10px] font-bold">
+             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-white text-[10px] font-bold">
                 {count}
             </span>
         )}
@@ -63,13 +63,13 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
             >
                 <header className="flex-shrink-0 p-3 border-b border-white/10 flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">{t('generatedHistory')}</h2>
+                        <h2 className="text-lg font-semibold text-slate-800 dark:text-zinc-200">{t('generatedHistory')}</h2>
                          <div className="flex items-center gap-1 bg-black/10 dark:bg-black/30 p-1 rounded-lg">
                             <HistoryTabButton label={t('historyTabDesign')} isActive={activeTab === 'design'} onClick={() => setActiveTab('design')} count={imageCounts.design || 0} />
                             <HistoryTabButton label={t('historyTabThumbPost')} isActive={activeTab === 'thumbPost'} onClick={() => setActiveTab('thumbPost')} count={imageCounts.thumbPost || 0} />
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10 transition-colors" aria-label={t('close')}>
+                    <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10 transition-colors" aria-label={t('close')}>
                         <XIcon className="w-5 h-5" />
                     </button>
                 </header>
@@ -92,7 +92,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                                             <button 
                                                 onClick={() => onReferenceClick(image)} 
                                                 title={t('useAsReference')}
-                                                className="p-2 bg-black/40 text-white rounded-full hover:bg-blue-500/80 backdrop-blur-sm transition-all"
+                                                className="p-2 bg-black/40 text-white rounded-full hover:bg-orange-500/80 backdrop-blur-sm transition-all"
                                             >
                                                 <PhotoIcon className="w-5 h-5" />
                                             </button>
@@ -117,7 +117,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                         </div>
                     ) : (
                          <div className="flex items-center justify-center h-full">
-                            <p className="text-slate-500 dark:text-slate-400">{t('noImages')}</p>
+                            <p className="text-slate-500 dark:text-zinc-400">{t('noImages')}</p>
                         </div>
                     )}
                 </main>

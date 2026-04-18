@@ -43,11 +43,11 @@ const GridImageItem: React.FC<{
     const buttonClass = "p-2 bg-black/40 text-white rounded-full hover:bg-black/60 backdrop-blur-sm";
 
     return (
-        <div className="relative group bg-slate-300 dark:bg-slate-800 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shadow-md">
+        <div className="relative group bg-slate-300 dark:bg-zinc-900 rounded-lg overflow-hidden border border-slate-300 dark:border-white/10 shadow-md">
             <img src={image.src} alt={`Thumbnail ${image.id}`} className="w-full h-full object-cover" />
             <div className="absolute top-2 right-2 flex flex-col items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <button onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-indigo-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
-                <button onClick={() => onView(image.src)} className={`${buttonClass} hover:bg-blue-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
+                <button onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
+                <button onClick={() => onView(image.src)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
                 <button onClick={() => onDownload(image.src)} className={`${buttonClass} hover:bg-green-500/80`} title={t('downloadImage')} > <DownloadIcon className="w-5 h-5" /> </button>
                 <button onClick={() => onDelete(image.id)} className={`${buttonClass} hover:bg-red-500/80`} title={t('deleteImage')} > <TrashIcon className="w-5 h-5" /> </button>
             </div>
@@ -58,12 +58,12 @@ const GridImageItem: React.FC<{
 const Placeholder: React.FC = () => {
     const { t } = useI18n();
     return (
-        <div className="w-full h-full flex flex-col justify-center items-center text-center p-4 text-slate-600 dark:text-slate-400">
+        <div className="w-full h-full flex flex-col justify-center items-center text-center p-4 text-slate-600 dark:text-zinc-400">
             <h3 className="text-xl font-semibold mb-4">{t('thumbVideoPlaceholderTitle')}</h3>
             <div className="max-w-lg text-left mt-4 bg-white/10 dark:bg-black/20 backdrop-blur-lg rounded-2xl p-6 flex flex-col gap-4 shadow-2xl border border-white/20 dark:border-white/10">
-                <p className="text-sm text-slate-700 dark:text-slate-300">{t('thumbVideoPlaceholderNote1')}</p>
-                <p className="text-sm text-slate-700 dark:text-slate-300">{t('thumbVideoPlaceholderNote2')}</p>
-                <p className="text-sm text-slate-700 dark:text-slate-300">{t('thumbVideoPlaceholderNote3')}</p>
+                <p className="text-sm text-slate-700 dark:text-zinc-300">{t('thumbVideoPlaceholderNote1')}</p>
+                <p className="text-sm text-slate-700 dark:text-zinc-300">{t('thumbVideoPlaceholderNote2')}</p>
+                <p className="text-sm text-slate-700 dark:text-zinc-300">{t('thumbVideoPlaceholderNote3')}</p>
             </div>
         </div>
     );
@@ -126,7 +126,11 @@ export const ThumbVideoTab: React.FC<ThumbVideoTabProps> = (props) => {
             images.forEach(img => onDeleteImage(img.id));
             onAddImages(newImages, 'thumbVideo');
         } catch (e: any) {
-            setError(e.message || t('errorNoImage'));
+            if (e.message === "API_KEY_MISSING") {
+                window.dispatchEvent(new CustomEvent('showApiKeyModal'));
+            } else {
+                setError(e.message || t('errorNoImage'));
+            }
         } finally {
             setIsLoading(false);
         }
@@ -169,7 +173,7 @@ export const ThumbVideoTab: React.FC<ThumbVideoTabProps> = (props) => {
     const aspectClass = aspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16]';
 
     return (
-        <div className="w-full h-full flex flex-col bg-slate-200 dark:bg-slate-900 dot-grid">
+        <div className="w-full h-full flex flex-col bg-slate-200 dark:bg-zinc-950 dot-grid">
             <main className="flex-grow p-4 md:p-6 lg:p-8 overflow-y-auto">
                 <div className="max-w-5xl mx-auto h-full">
                     {error && (
@@ -183,7 +187,7 @@ export const ThumbVideoTab: React.FC<ThumbVideoTabProps> = (props) => {
                     {isLoading && (
                         <div className={`grid grid-cols-1 ${gridColsClass} gap-4 md:gap-6`}>
                             {Array(4).fill(0).map((_, i) => (
-                                <div key={i} className={`relative ${aspectClass} bg-slate-300 dark:bg-slate-800 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-400 dark:border-slate-600`}>
+                                <div key={i} className={`relative ${aspectClass} bg-slate-300 dark:bg-zinc-900 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-400 dark:border-zinc-600`}>
                                     <ProgressBar />
                                 </div>
                             ))}
@@ -234,18 +238,18 @@ export const ThumbVideoTab: React.FC<ThumbVideoTabProps> = (props) => {
             )}
              {showTextConfirmDialog && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={handleCancelTextInclusion}>
-                    <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-2xl w-full max-w-md flex flex-col" onClick={e => e.stopPropagation()}>
-                        <header className="p-4 border-b border-slate-200 dark:border-slate-700">
-                            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">{t('textInImageWarningTitle')}</h2>
+                    <div className="bg-white dark:bg-zinc-900 border border-slate-300 dark:border-white/10 rounded-lg shadow-2xl w-full max-w-md flex flex-col" onClick={e => e.stopPropagation()}>
+                        <header className="p-4 border-b border-slate-200 dark:border-white/10">
+                            <h2 className="text-lg font-semibold text-slate-800 dark:text-zinc-200">{t('textInImageWarningTitle')}</h2>
                         </header>
                         <main className="p-4">
-                            <p className="text-sm text-slate-600 dark:text-slate-300">{t('textInImageWarningMessage')}</p>
+                            <p className="text-sm text-slate-600 dark:text-zinc-300">{t('textInImageWarningMessage')}</p>
                         </main>
-                        <footer className="p-3 border-t border-slate-200 dark:border-slate-700 flex justify-end items-center gap-3 bg-slate-50 dark:bg-slate-800/50 rounded-b-lg">
-                            <button onClick={handleCancelTextInclusion} className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200">
+                        <footer className="p-3 border-t border-slate-200 dark:border-white/10 flex justify-end items-center gap-3 bg-slate-50 dark:bg-zinc-900/50 rounded-b-lg">
+                            <button onClick={handleCancelTextInclusion} className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-zinc-600 dark:hover:bg-slate-500 dark:text-zinc-200">
                                 {t('cancel')}
                             </button>
-                            <button onClick={handleConfirmTextInclusion} className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-indigo-500 text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-600 flex items-center gap-2">
+                            <button onClick={handleConfirmTextInclusion} className="py-2 px-4 text-sm font-semibold rounded-md transition-colors duration-200 bg-orange-500 text-white shadow-md shadow-orange-500/30 hover:bg-orange-600 flex items-center gap-2">
                                 <CheckIcon className="w-4 h-4" />
                                 {t('confirm')}
                             </button>

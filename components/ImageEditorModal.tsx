@@ -503,17 +503,17 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
                 {/* Left Toolbar */}
                 <div className="w-full md:w-20 bg-black/60 border-b md:border-b-0 md:border-r border-white/10 flex md:flex-col items-center justify-start p-3 gap-6 z-30 shadow-2xl backdrop-blur-md">
                     <div className="flex md:flex-col gap-3 w-full justify-center items-center">
-                        <button onClick={() => setTool('select')} className={`p-3 rounded-xl transition-all ${tool === 'select' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title="Marquee Select">
+                        <button onClick={() => setTool('select')} className={`p-3 rounded-xl transition-all ${tool === 'select' ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/40' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title="Marquee Select">
                             <SelectIcon className="w-6 h-6" />
                         </button>
-                        <button onClick={() => setTool('brush')} className={`relative group p-3 rounded-xl transition-all duration-200 ${tool === 'brush' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40 ring-1 ring-white/20' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title={t('pen')}>
+                        <button onClick={() => setTool('brush')} className={`relative group p-3 rounded-xl transition-all duration-200 ${tool === 'brush' ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/20' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title={t('pen')}>
                             <PencilIcon className="w-6 h-6" />
                         </button>
-                        <button onClick={() => setTool('eraser')} className={`p-3 rounded-xl transition-all ${tool === 'eraser' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title={t('eraser')}>
+                        <button onClick={() => setTool('eraser')} className={`p-3 rounded-xl transition-all ${tool === 'eraser' ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/40' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title={t('eraser')}>
                             <EraserIcon className="w-6 h-6" />
                         </button>
                         <div className="w-px h-8 md:w-8 md:h-px bg-white/10 mx-auto"></div>
-                        <button onClick={() => setTool('pan')} className={`p-3 rounded-xl transition-all ${isPanToolActive ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title={`${t('panTool')} (Hold Space)`}>
+                        <button onClick={() => setTool('pan')} className={`p-3 rounded-xl transition-all ${isPanToolActive ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/40' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`} title={`${t('panTool')} (Hold Space)`}>
                             <HandIcon className="w-6 h-6" />
                         </button>
                     </div>
@@ -558,7 +558,7 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
                     <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
                          <div className="flex gap-2 pointer-events-auto">
                             <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-lg">
-                                <button onClick={() => setViewMode(viewMode === 'image' ? 'both' : 'image')} className={`p-2 rounded-lg transition-all ${viewMode === 'image' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-white/10'}`} title={t('toggleMaskView')}>
+                                <button onClick={() => setViewMode(viewMode === 'image' ? 'both' : 'image')} className={`p-2 rounded-lg transition-all ${viewMode === 'image' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-white/10'}`} title={t('toggleMaskView')}>
                                     <EyeIcon className="w-5 h-5" />
                                 </button>
                                 <span className="text-xs font-bold text-slate-300 px-2 min-w-[50px] text-center">{Math.round(zoom * 100)}%</span>
@@ -629,7 +629,7 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
                                         zIndex: 10
                                     }}
                                 >
-                                     {isLoading && <div className="absolute inset-0 bg-indigo-500/20 animate-pulse"></div>}
+                                     {isLoading && <div className="absolute inset-0 bg-orange-500/20 animate-pulse"></div>}
                                 </div>
                             )}
                             
@@ -651,19 +651,19 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
                                     <input 
                                         type="range" min="1" max="200" value={brushSize} 
                                         onChange={(e) => setBrushSize(Number(e.target.value))}
-                                        className="w-24 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                                        className="w-24 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
                                     />
                                 </div>
                                 <div className="flex items-center gap-2">
                                     {/* Reference Images Button */}
                                     <button 
                                         onClick={() => fileInputRef.current?.click()} 
-                                        className={`relative p-1.5 rounded-lg text-xs border flex items-center gap-1 transition-all ${referenceImages.length > 0 ? 'bg-indigo-600/30 border-indigo-500 text-indigo-200' : 'bg-slate-800 hover:bg-slate-700 border-white/10 text-slate-300'}`}
+                                        className={`relative p-1.5 rounded-lg text-xs border flex items-center gap-1 transition-all ${referenceImages.length > 0 ? 'bg-orange-600/30 border-orange-500 text-orange-200' : 'bg-slate-800 hover:bg-slate-700 border-white/10 text-slate-300'}`}
                                         title="Add Reference Images (Style/Object)"
                                     >
                                         <PhotoIcon className="w-3.5 h-3.5"/> 
                                         <span className="hidden sm:inline">Ref Imgs</span>
-                                        {referenceImages.length > 0 && <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-indigo-500 text-[8px] font-bold text-white">{referenceImages.length}</span>}
+                                        {referenceImages.length > 0 && <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-orange-500 text-[8px] font-bold text-white">{referenceImages.length}</span>}
                                     </button>
                                     <input type="file" ref={fileInputRef} className="hidden" onChange={handleReferenceUpload} multiple accept="image/*"/>
                                 </div>
@@ -675,11 +675,11 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
                              {/* Prompt Input Row */}
                              <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <CommentIcon className={`w-5 h-5 ${selection || history.length > 1 ? 'text-indigo-400' : 'text-slate-600'}`} />
+                                    <CommentIcon className={`w-5 h-5 ${selection || history.length > 1 ? 'text-orange-400' : 'text-slate-600'}`} />
                                 </div>
                                 <input 
                                     type="text"
-                                    className="block w-full pl-10 pr-24 py-3 bg-white/5 border border-white/10 rounded-xl text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white/10 transition-all text-white"
+                                    className="block w-full pl-10 pr-24 py-3 bg-white/5 border border-white/10 rounded-xl text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white/10 transition-all text-white"
                                     placeholder={selection ? "Describe change in selected region..." : "Select area or mask to edit..."}
                                     value={editPrompt}
                                     onChange={(e) => setEditPrompt(e.target.value)}
@@ -688,7 +688,7 @@ export const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ onClose, onS
                                 <button 
                                     onClick={handleGenerate}
                                     disabled={isLoading || !editPrompt.trim()}
-                                    className="absolute right-1.5 top-1.5 bottom-1.5 bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-lg font-bold text-xs transition-all disabled:opacity-0 disabled:scale-90 flex items-center gap-2"
+                                    className="absolute right-1.5 top-1.5 bottom-1.5 bg-orange-600 hover:bg-orange-500 text-white px-4 rounded-lg font-bold text-xs transition-all disabled:opacity-0 disabled:scale-90 flex items-center gap-2"
                                     title="Ctrl + Enter"
                                 >
                                     <WandIcon className="w-3 h-3" /> Go

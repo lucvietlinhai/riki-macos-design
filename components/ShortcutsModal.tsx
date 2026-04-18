@@ -39,8 +39,8 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                 onClick={(e) => e.stopPropagation()}
             >
                 <header className="flex-shrink-0 p-3 px-4 border-b border-white/10 flex justify-between items-center">
-                    <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">{t('shortcutsTitle')}</h2>
-                    <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10 transition-colors" aria-label={t('close')}>
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-zinc-200">{t('shortcutsTitle')}</h2>
+                    <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10 transition-colors" aria-label={t('close')}>
                         <XIcon className="w-5 h-5" />
                     </button>
                 </header>
@@ -48,11 +48,11 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                    <ul className="space-y-2">
                         {shortcuts.map(({ action, keys, isCtrl }) => (
                             <li key={action} className="flex justify-between items-center p-2 bg-black/5 dark:bg-black/20 rounded-md">
-                                <span className="text-sm text-slate-700 dark:text-slate-300">{action}</span>
+                                <span className="text-sm text-slate-700 dark:text-zinc-300">{action}</span>
                                 <div className="flex items-center gap-1">
                                     {keys.map((key, index) => (
                                         <React.Fragment key={key}>
-                                            <kbd className="px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-black/10 border-b-2 border-white/20 dark:border-b-black/40 rounded-md">
+                                            <kbd className="px-2 py-1 text-xs font-semibold text-slate-600 dark:text-zinc-300 bg-black/10 border-b-2 border-white/20 dark:border-b-black/40 rounded-md">
                                                 {key}
                                             </kbd>
                                             {isCtrl && index < keys.length - 1 && <span className="text-slate-400">+</span>}

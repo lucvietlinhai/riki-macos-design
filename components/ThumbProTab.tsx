@@ -140,8 +140,12 @@ export const ThumbProTab: React.FC<ThumbProTabProps> = ({ onAddImages, model, on
             }
         } catch (e: any) {
             console.error("Generation error:", e);
-            setError(e.message || "An unexpected error occurred.");
-            if (e.message?.includes("Requested entity was not found")) setIsKeySelected(false);
+            if (e.message === "API_KEY_MISSING") {
+                window.dispatchEvent(new CustomEvent('showApiKeyModal'));
+            } else {
+                setError(e.message || "An unexpected error occurred.");
+                if (e.message?.includes("Requested entity was not found")) setIsKeySelected(false);
+            }
         } finally { setIsGenerating(false); }
     };
     
@@ -378,10 +382,10 @@ export const ThumbProTab: React.FC<ThumbProTabProps> = ({ onAddImages, model, on
                             
                             {/* Overlay Controls */}
                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 z-10">
-                                <button onClick={handleEditClick} className={`${buttonClass} hover:bg-indigo-500/80 hover:scale-110`} title={t('editImage')}>
+                                <button onClick={handleEditClick} className={`${buttonClass} hover:bg-orange-500/80 hover:scale-110`} title={t('editImage')}>
                                     <WandIcon className="w-6 h-6" />
                                 </button>
-                                <button onClick={handleViewClick} className={`${buttonClass} hover:bg-blue-500/80 hover:scale-110`} title={t('viewDetail')}>
+                                <button onClick={handleViewClick} className={`${buttonClass} hover:bg-orange-500/80 hover:scale-110`} title={t('viewDetail')}>
                                     <MaximizeIcon className="w-6 h-6" />
                                 </button>
                                 <button onClick={() => { const a = document.createElement('a'); a.href = resultImage; a.download = `riki-pro-${Date.now()}.png`; a.click(); }} className={`${buttonClass} hover:bg-green-500/80 hover:scale-110`} title={t('downloadImage')}>

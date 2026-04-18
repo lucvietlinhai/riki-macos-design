@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
     ? "flex items-center justify-center p-2 bg-orange-500/10 backdrop-blur-lg border border-orange-500/20 rounded-lg hover:bg-orange-500/20 transition-all shadow-md group"
     : "flex items-center justify-center p-2 bg-black/10 dark:bg-black/20 backdrop-blur-lg border border-white/20 dark:border-white/10 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors shadow-md";
 
-  const iconColor = isProMode ? "text-orange-500 group-hover:text-orange-400" : "text-slate-700 dark:text-slate-300";
+  const iconColor = isProMode ? "text-orange-500 group-hover:text-orange-400" : "text-slate-700 dark:text-zinc-300";
 
   return (
     <div className="relative flex items-center gap-2">
@@ -127,25 +127,25 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
                 title={t('modelLabel')}
             >
                 <div className={`w-2 h-2 rounded-full ${model.includes('pro') ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'bg-emerald-500'}`}></div>
-                <span className={`text-xs font-bold ${isProMode ? 'text-orange-400' : 'text-slate-600 dark:text-slate-300'}`}>
+                <span className={`text-xs font-bold ${isProMode ? 'text-orange-400' : 'text-slate-600 dark:text-zinc-300'}`}>
                     {model.includes('3.1') ? '3.1 Flash' : '2.5 Flash'}
                 </span>
-                <ChevronDownIcon className={`w-4 h-4 transition-transform ${isModelPopoverOpen ? 'rotate-180' : ''} ${isProMode ? 'text-orange-500' : 'text-slate-500 dark:text-slate-400'}`} />
+                <ChevronDownIcon className={`w-4 h-4 transition-transform ${isModelPopoverOpen ? 'rotate-180' : ''} ${isProMode ? 'text-orange-500' : 'text-slate-500 dark:text-zinc-400'}`} />
             </button>
 
             {isModelPopoverOpen && (
                 <div
                     ref={modelPopoverRef}
-                    className={`absolute top-full right-0 mt-2 w-72 backdrop-blur-xl rounded-xl shadow-2xl p-2 border z-50 ${isProMode ? 'bg-zinc-950/95 border-orange-500/30' : 'bg-white/90 dark:bg-zinc-900/95 border-slate-200 dark:border-white/10'}`}
+                    className={`absolute top-full right-0 mt-2 w-72 backdrop-blur-xl rounded-xl shadow-2xl p-2 border z-50 ${isProMode ? 'bg-zinc-950/95 border-orange-500/30' : 'bg-white/90 dark:bg-zinc-950/95 border-slate-200 dark:border-white/10'}`}
                 >
                     <div className="px-2 py-1 mb-1">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{t('modelLabel')}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">{t('modelLabel')}</span>
                     </div>
                     <ul className="space-y-1">
                         <li>
                             <button
                                 onClick={() => handleModelChange('gemini-2.5-flash-image')}
-                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-all ${model === 'gemini-2.5-flash-image' ? (isProMode ? 'bg-orange-500/20 text-orange-200 border border-orange-500/30' : 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300') : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400'}`}
+                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-all ${model === 'gemini-2.5-flash-image' ? (isProMode ? 'bg-orange-500/20 text-orange-200 border border-orange-500/30' : 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300') : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-zinc-400'}`}
                             >
                                 <div className="flex flex-col">
                                     <span className="text-xs font-bold">{t('modelFlash')}</span>
@@ -157,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
                         <li>
                             <button
                                 onClick={() => handleModelChange('gemini-3.1-flash-image-preview')}
-                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-all ${model === 'gemini-3.1-flash-image-preview' ? (isProMode ? 'bg-orange-500/20 text-orange-200 border border-orange-500/30' : 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300') : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400'}`}
+                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-all ${model === 'gemini-3.1-flash-image-preview' ? (isProMode ? 'bg-orange-500/20 text-orange-200 border border-orange-500/30' : 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300') : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-zinc-400'}`}
                             >
                                 <div className="flex flex-col">
                                     <span className="text-xs font-bold">Gemini 3.1 Flash Image</span>
@@ -168,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
                         </li>
                     </ul>
                     {model === 'gemini-3.1-flash-image-preview' && (
-                        <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                        <div className="mt-2 pt-2 border-t border-slate-200 dark:border-white/5">
                              <button 
                                 onClick={handleSelectKey}
                                 className="w-full flex items-center justify-center gap-2 py-2 px-3 text-[10px] font-bold uppercase tracking-tight bg-orange-600 hover:bg-orange-500 text-black rounded-lg transition-all"
@@ -219,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
             aria-expanded={isLangPopoverOpen}
           >
             <CurrentFlag className="w-6 h-auto rounded-sm" />
-            <ChevronDownIcon className={`w-4 h-4 transition-transform ${isLangPopoverOpen ? 'rotate-180' : ''} ${isProMode ? 'text-orange-500' : 'text-slate-500 dark:text-slate-400'}`} />
+            <ChevronDownIcon className={`w-4 h-4 transition-transform ${isLangPopoverOpen ? 'rotate-180' : ''} ${isProMode ? 'text-orange-500' : 'text-slate-500 dark:text-zinc-400'}`} />
           </button>
 
           {isLangPopoverOpen && (
@@ -234,7 +234,7 @@ export const Header: React.FC<HeaderProps> = ({ onHistoryClick, onShortcutsClick
                   <li key={lang}>
                       <button
                       onClick={() => handleLanguageChange(lang)}
-                      className={`w-full flex items-center gap-2 p-1.5 rounded-md text-left text-sm transition-colors ${language === lang ? (isProMode ? 'bg-orange-600 text-black font-bold' : 'bg-indigo-600 text-white') : (isProMode ? 'text-orange-500/70 hover:bg-orange-500/20' : 'text-slate-700 dark:text-slate-300 hover:bg-black/10 dark:hover:bg-white/10')}`}
+                      className={`w-full flex items-center gap-2 p-1.5 rounded-md text-left text-sm transition-colors ${language === lang ? (isProMode ? 'bg-orange-600 text-black font-bold' : 'bg-orange-600 text-white') : (isProMode ? 'text-orange-500/70 hover:bg-orange-500/20' : 'text-slate-700 dark:text-zinc-300 hover:bg-black/10 dark:hover:bg-white/10')}`}
                       >
                       <Flag className="w-6 h-auto rounded-sm" />
                       <span className="font-medium">{lang.toUpperCase()}</span>

@@ -63,6 +63,10 @@ const App: React.FC = () => {
   const [showImageEditorModal, setShowImageEditorModal] = useState<boolean>(false);
   const [editingImage, setEditingImage] = useState<GeneratedImage | null>(null);
 
+  // API Key handling
+  const [showApiKeyModal, setShowApiKeyModal] = useState<boolean>(false);
+  const [apiKeyInput, setApiKeyInput] = useState<string>('');
+
   // For new tab styling
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const [indicatorStyle, setIndicatorStyle] = useState<{left?: number; width?: number}>({});
@@ -72,6 +76,20 @@ const App: React.FC = () => {
       { id: 'thumbPost', label: t('tabThumbPost') },
       { id: 'thumbPro', label: t('tabThumbPro') },
   ], [t]);
+
+  useEffect(() => {
+    const handleShowApiKeyModal = () => setShowApiKeyModal(true);
+    window.addEventListener('showApiKeyModal', handleShowApiKeyModal);
+    return () => window.removeEventListener('showApiKeyModal', handleShowApiKeyModal);
+  }, []);
+
+  const handleSaveApiKey = () => {
+    if (apiKeyInput.trim()) {
+      localStorage.setItem('gemini_api_key', apiKeyInput.trim());
+      setShowApiKeyModal(false);
+      setApiKeyInput('');
+    }
+  };
 
   useEffect(() => {
     const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
@@ -176,7 +194,11 @@ const App: React.FC = () => {
             setError('No image was generated.');
         }
     }).catch(e => {
-        setError(e.message || 'An unknown error occurred.');
+        if (e.message === "API_KEY_MISSING") {
+            setShowApiKeyModal(true);
+        } else {
+            setError(e.message || 'An unknown error occurred.');
+        }
     }).finally(() => {
         stopProgressIndicator();
         setPendingImages([]);
@@ -460,7 +482,7 @@ const App: React.FC = () => {
         default:
             return (
                 <div className="w-full h-full flex flex-row overflow-hidden">
-                    <aside className="w-[340px] flex-shrink-0 h-full bg-white dark:bg-zinc-900 border-r border-slate-200 dark:border-slate-800 z-30 flex flex-col relative shadow-xl">
+                    <aside className="w-[340px] flex-shrink-0 h-full bg-white dark:bg-zinc-950 border-r border-slate-200 dark:border-white/5 z-30 flex flex-col relative shadow-xl">
                         <div className="flex-grow overflow-y-auto scrollbar-thin">
                             <PromptControls
                                 prompt={prompt}
@@ -490,7 +512,7 @@ const App: React.FC = () => {
                     </aside>
                     <main 
                         ref={canvasRef}
-                        className="flex-grow h-full relative overflow-hidden bg-slate-200 dark:bg-slate-900 dot-grid"
+                        className="flex-grow h-full relative overflow-hidden bg-slate-200 dark:bg-zinc-950 dot-grid"
                     >
                         <ResultDisplay
                           ref={resultDisplayRef}
@@ -519,17 +541,17 @@ const App: React.FC = () => {
   const isProActive = activeTab === 'thumbPro';
 
   return (
-    <div className={`relative w-screen h-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 ${isProActive ? 'bg-black text-white' : 'bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-gray-300'}`}>
-        <div className={`flex-shrink-0 p-2 flex justify-center items-center gap-2 backdrop-blur-sm z-30 border-b relative transition-all duration-500 ${isProActive ? 'bg-zinc-950/80 border-orange-500/20' : 'bg-white/80 dark:bg-zinc-900/80 border-slate-200 dark:border-slate-800'}`}>
+    <div className={`relative w-screen h-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 ${isProActive ? 'bg-black text-white' : 'bg-slate-100 text-slate-900 dark:bg-zinc-950 dark:text-gray-300'}`}>
+        <div className={`flex-shrink-0 p-2 flex justify-center items-center gap-2 backdrop-blur-sm z-30 border-b relative transition-all duration-500 ${isProActive ? 'bg-zinc-950/80 border-orange-500/20' : 'bg-white/80 dark:bg-zinc-950/80 border-slate-200 dark:border-white/5'}`}>
             <div className="absolute top-1/2 left-4 -translate-y-1/2 flex items-center gap-2">
                 <div className="hidden sm:block">
                     <h1 className={`font-bold text-lg leading-tight transition-colors duration-500`} style={{ fontFamily: "'Lilita One', sans-serif", color: isProActive ? '#f97316' : '' }}>AI RIKI</h1>
-                    <p className={`text-xs transition-colors duration-500 ${isProActive ? 'text-orange-500/50' : 'text-slate-500 dark:text-slate-400'}`}>Phiên bản sử dụng 3.0</p>
+                    <p className={`text-xs transition-colors duration-500 ${isProActive ? 'text-orange-500/50' : 'text-slate-500 dark:text-zinc-400'}`}>Phiên bản sử dụng 3.0</p>
                 </div>
             </div>
-            <div className={`relative flex items-center p-1 rounded-full border shadow-sm overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar transition-all duration-500 ${isProActive ? 'bg-black/70 border-orange-500/30' : 'bg-slate-100 dark:bg-zinc-800/70 border-slate-200 dark:border-slate-700'}`}>
+            <div className={`relative flex items-center p-1 rounded-full border shadow-sm overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar transition-all duration-500 ${isProActive ? 'bg-black/70 border-orange-500/30' : 'bg-slate-100 dark:bg-zinc-900/70 border-slate-200 dark:border-white/10'}`}>
                 <span
-                    className={`absolute h-[calc(100%-8px)] top-1 rounded-full transition-all duration-300 ease-in-out shadow-sm ${isProActive ? 'bg-orange-600' : 'bg-white dark:bg-indigo-600'}`}
+                    className={`absolute h-[calc(100%-8px)] top-1 rounded-full transition-all duration-300 ease-in-out shadow-sm ${isProActive ? 'bg-orange-600' : 'bg-white dark:bg-orange-600'}`}
                     style={indicatorStyle}
                 />
                 {tabs.map((tab, index) => (
@@ -540,7 +562,7 @@ const App: React.FC = () => {
                         className={`relative z-10 px-4 py-1.5 text-sm font-bold rounded-full transition-colors duration-300 outline-none focus:ring-0 whitespace-nowrap ${
                             activeTab === tab.id
                                 ? (isProActive ? 'text-black' : 'text-slate-900 dark:text-white')
-                                : (isProActive ? 'text-orange-500/60 hover:text-orange-300' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white')
+                                : (isProActive ? 'text-orange-500/60 hover:text-orange-300' : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white')
                         }`}
                     >
                         {tab.label}
@@ -602,6 +624,31 @@ const App: React.FC = () => {
                 onSave={handleImageEditSave}
                 isLoading={isLoading}
             />
+        )}
+
+        {showApiKeyModal && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 text-slate-800 dark:text-slate-200">
+                <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden max-w-md w-full border border-slate-200 dark:border-white/10 p-6 flex flex-col gap-4">
+                    <h2 className="text-xl font-bold">Yêu cầu thiết lập API Key</h2>
+                    <p className="text-sm dark:text-slate-400">Hệ thống chưa tìm thấy Gemini API Key. Vui lòng nhập API Key của bạn để tiếp tục sử dụng.</p>
+                    <input 
+                        type="password"
+                        placeholder="Nhập API Key ở đây..."
+                        value={apiKeyInput}
+                        onChange={(e) => setApiKeyInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveApiKey()}
+                        className="w-full p-3 rounded-lg border dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 dark:text-white outline-none focus:border-orange-500 transition-colors"
+                    />
+                    <div className="flex justify-end gap-3 mt-2">
+                        <button onClick={() => setShowApiKeyModal(false)} className="px-4 py-2 rounded-lg font-medium hover:bg-slate-100 dark:hover:bg-zinc-800">
+                            Đóng
+                        </button>
+                        <button onClick={handleSaveApiKey} disabled={!apiKeyInput.trim()} className="px-6 py-2 rounded-lg font-medium bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-50">
+                            Lưu và sử dụng
+                        </button>
+                    </div>
+                </div>
+            </div>
         )}
     </div>
   );

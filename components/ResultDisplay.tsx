@@ -52,20 +52,20 @@ const ProgressBar: React.FC<{ progress: number; message: string }> = ({ progress
 const Placeholder: React.FC = () => {
     const { t } = useI18n();
     return (
-        <div className="w-full h-full flex flex-col justify-center items-center text-center p-4 text-slate-600 dark:text-slate-400">
+        <div className="w-full h-full flex flex-col justify-center items-center text-center p-4 text-slate-600 dark:text-zinc-400">
             <h3 className="text-lg font-semibold mb-2">{t('canvasReady')}</h3>
             <div className="max-w-lg text-left mt-8 bg-white/10 dark:bg-black/20 backdrop-blur-lg rounded-2xl p-4 flex flex-start gap-4 shadow-2xl border border-white/20 dark:border-white/10">
                 <div className="flex-shrink-0 pt-0.5">
-                    <InfoCircleIcon className="w-6 h-6 text-blue-400 dark:text-yellow-400" />
+                    <InfoCircleIcon className="w-6 h-6 text-orange-400 dark:text-yellow-400" />
                 </div>
-                <div className="text-slate-700 dark:text-slate-300">
+                <div className="text-slate-700 dark:text-zinc-300">
                     <p className="text-sm">
                         <strong>{t('note')}</strong> {t('note1')}
                     </p>
                     <p className="text-sm mt-2">
                         {t('note2')}
                     </p>
-                    <p className="text-xs mt-2 text-center">{t('note3')} <a href="http://zalo.me/0987895715" target="_blank" className="font-bold text-blue-600 dark:text-yellow-300"><strong>{t('here')}</strong></a></p>
+                    <p className="text-xs mt-2 text-center">{t('note3')} <a href="http://zalo.me/0987895715" target="_blank" className="font-bold text-orange-600 dark:text-yellow-300"><strong>{t('here')}</strong></a></p>
                 </div>
             </div>
         </div>
@@ -180,14 +180,14 @@ const ImageItem: React.FC<{
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         className={`group relative cursor-grab flex-shrink-0 transition-transform duration-300 ease-in-out w-[512px] h-[512px] 
-            ${isSelected ? 'ring-2 ring-blue-500 ring-offset-4 ring-offset-slate-200 dark:ring-offset-slate-900 rounded-lg' : ''}
+            ${isSelected ? 'ring-2 ring-orange-500 ring-offset-4 ring-offset-slate-200 dark:ring-offset-slate-900 rounded-lg' : ''}
           `}
     >
         <div className="relative w-full h-full bg-black/20 rounded-md overflow-hidden shadow-lg dark:shadow-2xl shadow-slate-400/40 dark:shadow-black/40">
             <img src={image.src} alt={t('generatedMascot')} className="w-full h-full object-contain pointer-events-none select-none" />
             <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <button onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-indigo-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
-                <button onClick={() => onViewDetail(image.src)} className={`${buttonClass} hover:bg-blue-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
+                <button onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
+                <button onClick={() => onViewDetail(image.src)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>
                 {/* Use image.src directly for download to ensure high quality */}
                 <button onClick={() => onDownload(image.src)} className={`${buttonClass} hover:bg-green-500/80`} title={t('downloadImage')} > <DownloadIcon className="w-5 h-5" /> </button>
             </div>
