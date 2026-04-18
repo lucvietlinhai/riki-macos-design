@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tạo ảnh Rikimo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lilita+One&family=Noto+Sans+Tai+Viet&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        overflow: hidden; /* Prevent body scroll */
+      }
+      .scrollbar-thin {
+        scrollbar-width: thin;
+        /* Light */
+        scrollbar-color: #94a3b8 #e2e8f0; /* slate-400 slate-200 */
+      }
+      .dark .scrollbar-thin {
+        /* Dark */
+        scrollbar-color: #4b5563 #1f2937; /* gray-600 gray-800 */
+      }
+      .scrollbar-thin::-webkit-scrollbar {
+        width: 8px;
+      }
+      .scrollbar-thin::-webkit-scrollbar-track {
+         /* Light */
+        background: #e2e8f0; /* slate-200 */
+      }
+      .dark .scrollbar-thin::-webkit-scrollbar-track {
+        /* Dark */
+        background: #1f2937; /* gray-800 */
+      }
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        /* Light */
+        background-color: #94a3b8; /* slate-400 */
+        border-radius: 10px;
+        border: 2px solid #e2e8f0; /* slate-200 */
+      }
+      .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+        /* Dark */
+        background-color: #4b5563; /* gray-600 */
+        border: 2px solid #1f2937; /* gray-800 */
+      }
+      .checkerboard {
+        background-color: #e2e8f0; /* slate-200 */
+        background-image:
+          linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
+          linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
+          linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      }
+       .dot-grid {
+        background-image: radial-gradient(circle, hsl(220 13% 85%) 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      .dark .dot-grid {
+        background-image: radial-gradient(circle, hsl(222 47% 15%) 1px, transparent 1px);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.19.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
