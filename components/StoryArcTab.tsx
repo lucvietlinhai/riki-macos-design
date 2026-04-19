@@ -3,7 +3,8 @@ import type { StoryArcState, StoryScene, CharacterId, AIModel, ImageFile } from 
 import { LoadingSpinner, WandIcon, RefreshIcon, TypographyIcon, PlusIcon, SettingsIcon, TrashIcon, MaximizeIcon } from '../constants';
 import { useI18n } from '../i18n';
 import { useTheme } from '../theme';
-import { analyzeStoryToScenes, generateStorySceneImage } from '../services/geminiService';
+import { analyzeStoryToScenes, generateStorySceneImage, generateSceneVideo } from '../services/geminiService';
+import { VideoIcon, PlayIcon } from '../constants';
 import { characters } from '../data/characters';
 
 interface StoryArcTabProps {
@@ -104,6 +105,31 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
     if (imageUrl) onImageGenerated(imageUrl);
   };
 
+  const handleGenerateVideo = async (sceneId: string) => {
+    const scene = state.scenes.find(s => s.id === sceneId);
+    if (!scene || !scene.generatedImage) return;
+
+    const updatedScenes = state.scenes.map(s =>
+      s.id === sceneId ? { ...s, isVideoLoading: true } : s
+    );
+    onStateChange({ ...state, scenes: updatedScenes });
+
+    try {
+      const videoUrl = await generateSceneVideo(scene, scene.generatedImage, state.aspectRatio);
+      
+      const nextScenes = state.scenes.map(s =>
+        s.id === sceneId ? { ...s, videoUrl, isVideoLoading: false } : s
+      );
+      onStateChange({ ...state, scenes: nextScenes });
+    } catch (e) {
+      console.error("Video generation failed", e);
+      const nextScenes = state.scenes.map(s =>
+        s.id === sceneId ? { ...s, isVideoLoading: false } : s
+      );
+      onStateChange({ ...state, scenes: nextScenes });
+    }
+  };
+
   const handleUpdateScenePrompt = (sceneId: string, newPrompt: string) => {
     const updatedScenes = state.scenes.map(s => 
       s.id === sceneId ? { ...s, imagePrompt: newPrompt } : s
@@ -120,7 +146,20 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
   };
 
   const [isGeneratingAll, setIsGeneratingAll] = React.useState(false);
+  const [isGeneratingAllVideos, setIsGeneratingAllVideos] = React.useState(false);
   const [isContinuing, setIsContinuing] = React.useState(false);
+
+  const handleGenerateAllVideos = async () => {
+    if (state.scenes.length === 0 || isGeneratingAllVideos) return;
+    setIsGeneratingAllVideos(true);
+
+    for (let i = 0; i < state.scenes.length; i++) {
+        const scene = state.scenes[i];
+        if (!scene.generatedImage || scene.videoUrl) continue;
+        await handleGenerateVideo(scene.id);
+    }
+    setIsGeneratingAllVideos(false);
+  };
 
   const handleGenerateAll = async () => {
     if (state.scenes.length === 0 || isGeneratingAll) return;
@@ -129,29 +168,29 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
     let currentScenes = [...state.scenes];
 
     for (let i = 0; i < currentScenes.length; i++) {
-      const scene = currentScenes[i];
-      if (scene.generatedImage) continue;
+        const scene = currentScenes[i];
+        if (scene.generatedImage) continue;
 
-      // 1. Set individual loading
-      currentScenes = currentScenes.map(s => s.id === scene.id ? { ...s, isLoading: true } : s);
-      onStateChange({ ...state, scenes: currentScenes });
-
-      // 2. Wait for current scene generation to finish before moving to next
-      const imageUrl = await generateSingleScene(scene.id, currentScenes);
-
-      if (!imageUrl) {
-        // 3a. Error occurred: update current scene loading state and STOP everything
-        currentScenes = currentScenes.map(s => s.id === scene.id ? { ...s, isLoading: false } : s);
+        // 1. Set individual loading
+        currentScenes = currentScenes.map(s => s.id === scene.id ? { ...s, isLoading: true } : s);
         onStateChange({ ...state, scenes: currentScenes });
-        break; // STOP loop on first error
-      }
 
-      // 3b. Handle success: update current scene and move to next
-      currentScenes = currentScenes.map(s =>
-        s.id === scene.id ? { ...s, generatedImage: imageUrl, isLoading: false } : s
-      );
-      onStateChange({ ...state, scenes: currentScenes });
-      onImageGenerated(imageUrl);
+        // 2. Wait for current scene generation to finish before moving to next
+        const imageUrl = await generateSingleScene(scene.id, currentScenes);
+
+        if (!imageUrl) {
+            // 3a. Error occurred: update current scene loading state and STOP everything
+            currentScenes = currentScenes.map(s => s.id === scene.id ? { ...s, isLoading: false } : s);
+            onStateChange({ ...state, scenes: currentScenes });
+            break; // STOP loop on first error
+        }
+
+        // 3b. Handle success: update current scene and move to next
+        currentScenes = currentScenes.map(s =>
+            s.id === scene.id ? { ...s, generatedImage: imageUrl, isLoading: false } : s
+        );
+        onStateChange({ ...state, scenes: currentScenes });
+        onImageGenerated(imageUrl);
     }
 
     setIsGeneratingAll(false);
@@ -352,19 +391,37 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
                                             />
                                         </div>
 
-                                        <div className="pt-4">
-                                            <button
-                                                onClick={() => handleGenerateScene(scene.id)}
-                                                disabled={scene.isLoading || (i > 0 && !state.scenes[i-1].generatedImage)}
-                                                className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${
-                                                    scene.isLoading || (i > 0 && !state.scenes[i-1].generatedImage)
-                                                        ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 cursor-not-allowed opacity-50' 
-                                                        : `${accentClass} text-white shadow-xl hover:shadow-orange-600/20 active:scale-95`
-                                                }`}
-                                            >
-                                                {scene.isLoading ? <LoadingSpinner /> : (scene.generatedImage ? <RefreshIcon className="w-5 h-5" /> : <WandIcon className="w-5 h-5" />)}
-                                                {scene.generatedImage ? t('storyArcRegenerate') : t('generate')}
-                                            </button>
+                                        <div className="pt-4 space-y-4">
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => handleGenerateScene(scene.id)}
+                                                    disabled={scene.isLoading || (i > 0 && !state.scenes[i-1].generatedImage)}
+                                                    className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${
+                                                        scene.isLoading || (i > 0 && !state.scenes[i-1].generatedImage)
+                                                            ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 cursor-not-allowed opacity-50' 
+                                                            : `${accentClass} text-white shadow-xl hover:shadow-orange-600/20 active:scale-95`
+                                                    }`}
+                                                >
+                                                    {scene.isLoading ? <LoadingSpinner /> : (scene.generatedImage ? <RefreshIcon className="w-5 h-5" /> : <WandIcon className="w-5 h-5" />)}
+                                                    {scene.generatedImage ? t('storyArcRegenerate') : t('generate')}
+                                                </button>
+
+                                                {scene.generatedImage && (
+                                                    <button
+                                                        onClick={() => handleGenerateVideo(scene.id)}
+                                                        disabled={scene.isVideoLoading}
+                                                        className={`px-6 flex items-center justify-center gap-3 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${
+                                                            scene.isVideoLoading
+                                                                ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 cursor-not-allowed'
+                                                                : `${isDark ? 'bg-blue-700 text-white' : 'bg-blue-600 text-white'} shadow-xl hover:shadow-blue-600/20 active:scale-95`
+                                                        }`}
+                                                        title={t('storyArcGenerateVideo')}
+                                                    >
+                                                        {scene.isVideoLoading ? <LoadingSpinner /> : <VideoIcon className="w-5 h-5" />}
+                                                    </button>
+                                                )}
+                                            </div>
+                                            
                                             {i > 0 && !state.scenes[i-1].generatedImage && (
                                                 <p className="mt-2 text-[10px] text-center text-slate-400 dark:text-zinc-600 font-medium italic">
                                                     * Cần tạo ảnh phân cảnh trước đó để duy trì đồng nhất
@@ -374,17 +431,25 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
                                     </div>
 
                                     <div 
-                                        onClick={() => scene.generatedImage && onViewDetail?.(scene.generatedImage)}
-                                        className={`relative ${state.aspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16]'} rounded-3xl overflow-hidden border ${isDark ? 'bg-black border-white/5' : 'bg-slate-100 border-slate-200'} flex items-center justify-center shadow-inner group/img transition-all ${scene.generatedImage ? 'cursor-zoom-in hover:shadow-2xl' : ''}`}
+                                        className={`relative ${state.aspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16]'} rounded-3xl overflow-hidden border ${isDark ? 'bg-black border-white/5' : 'bg-slate-100 border-slate-200'} flex items-center justify-center shadow-inner group/img transition-all ${scene.generatedImage ? 'hover:shadow-2xl' : ''}`}
                                     >
-                                        {scene.generatedImage ? (
+                                        {scene.videoUrl ? (
+                                            <video 
+                                                src={scene.videoUrl} 
+                                                controls 
+                                                autoPlay 
+                                                loop 
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : scene.generatedImage ? (
                                             <>
                                                 <img 
                                                     src={scene.generatedImage} 
                                                     alt={scene.title} 
-                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
+                                                    onClick={() => onViewDetail?.(scene.generatedImage!)}
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110 cursor-zoom-in"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                                     <div className="p-3 rounded-full bg-white/20 backdrop-blur-md border border-white/30 transform scale-50 group-hover/img:scale-100 transition-all duration-300">
                                                         <MaximizeIcon className="w-6 h-6 text-white" />
                                                     </div>
@@ -398,10 +463,12 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
                                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] block">{t('aiCreative')}</span>
                                             </div>
                                         )}
-                                        {scene.isLoading && (
+                                        {(scene.isLoading || scene.isVideoLoading) && (
                                             <div className="absolute inset-0 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center z-10 gap-4">
                                                 <LoadingSpinner className="w-12 h-12 text-orange-500" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 animate-pulse">{t('generatingImage')}</span>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 animate-pulse">
+                                                    {scene.isVideoLoading ? t('generatingVideo') : t('generatingImage')}
+                                                </span>
                                             </div>
                                         )}
                                     </div>

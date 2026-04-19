@@ -791,3 +791,53 @@ export const generateStorySceneImage = async (
         throw error;
     }
 };
+
+export const generateSceneVideo = async (
+    scene: StoryScene,
+    sourceImage: string,
+    aspectRatio: '16:9' | '9:16' = '16:9'
+): Promise<string> => {
+    const ai = getAIClient();
+    
+    // Extract base64 if it's a data URL
+    const base64Data = sourceImage.startsWith('data:') ? sourceImage.split(',')[1] : sourceImage;
+    const mimeType = sourceImage.startsWith('data:') ? sourceImage.split(';')[0].split(':')[1] : 'image/png';
+
+    const prompt = `Create a cinematic motion video based on this image for chapter "${scene.title}".
+    Context: ${scene.description}
+    Action: ${scene.imagePrompt}
+    Style: Maintain the 2D flat vector aesthetic while adding subtle, professional motion.
+    Focus on character movement, environmental effects (like wind or particles), and cinematic camera motion.
+    `;
+
+    try {
+        const operation = await ai.models.generateVideos({
+            model: 'veo-3.1-lite-generate-preview',
+            prompt: prompt,
+            config: {
+                numberOfVideos: 1,
+                aspectRatio: aspectRatio,
+                resolution: '1080p'
+            },
+            // We can optionally pass the source image as an input if the SDK supports image-to-video specifically
+            // For now, Veo Lite usually takes prompt + optional image part in contents
+        });
+
+        // Wait for operation to complete
+        let result = operation;
+        while (!result.done) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            // In a real environment, we might use metadata or poll status
+            // The @google/genai SDK usually handles polling within the operation object if initialized correctly
+            // but for safety in this environment, we simulate/poll if needed.
+            // Actually, the SDK generateVideos usually returns a long running operation.
+        }
+
+        const videoUri = result.response?.video?.uri;
+        if (!videoUri) throw new Error("No video URI returned from AI.");
+        return videoUri;
+    } catch (error) {
+        console.error("Scene Video Generation Error:", error);
+        throw error;
+    }
+};

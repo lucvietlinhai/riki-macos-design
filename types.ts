@@ -13,7 +13,9 @@ export interface StoryScene {
   description: string;
   imagePrompt: string;
   generatedImage?: string;
+  videoUrl?: string;
   isLoading?: boolean;
+  isVideoLoading?: boolean;
 }
 
 export interface StoryArcState {

@@ -67,6 +67,9 @@ export const translations = {
     storyArcStyleConsistency: 'Duy trì sự đồng nhất (Consistent Style)',
     storyArcAutoMagic: 'Sáng tạo lời nhắc tự động',
     storyArcAddScene: 'Thêm phân cảnh',
+    storyArcGenerateVideo: 'Tạo video động',
+    storyArcGenerateAllVideos: 'Tạo video tất cả bối cảnh',
+    generatingVideo: 'Đang tạo video AI...',
 
     // Pro Generator UI
     designModeTab: 'TỰ THIẾT KẾ',
@@ -263,6 +266,9 @@ export const translations = {
     tabThumbVideo: 'Video Image',
     tabThumbPro: 'Pro Thumbnail',
     tabStoryArc: 'Story Arc',
+    storyArcGenerateVideo: 'Generate Video',
+    storyArcGenerateAllVideos: 'Generate All Videos',
+    generatingVideo: 'Generating AI Video...',
     comingSoon: 'Feature coming soon...',
     modeLabel: 'Design Mode',
     modeFree: 'Free',
