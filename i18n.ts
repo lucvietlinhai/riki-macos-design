@@ -9,7 +9,6 @@ export const translations = {
     tabThumbVideo: 'TẠO ẢNH VIDEO',
     tabThumbPro: 'TẠO ẢNH THUMBNAIL',
     tabStoryArc: 'STORY TRUYỆN',
-    tabChatbot: 'RIKI CHATBOT',
     comingSoon: 'Tính năng đang được phát triển...',
 
     // Design Modes

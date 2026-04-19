@@ -3,7 +3,7 @@ import { characters } from './data/characters';
 
 export type AIModel = 'gemini-2.5-flash-image' | 'gemini-3.1-flash-image-preview';
 
-export type Tab = 'home' | 'design' | 'chatbot' | 'thumbPost' | 'thumbPro' | 'storyArc';
+export type Tab = 'design' | 'thumbPost' | 'thumbPro' | 'storyArc';
 export type DesignMode = 'free' | 'concept' | 'reference';
 
 export interface StoryScene {
