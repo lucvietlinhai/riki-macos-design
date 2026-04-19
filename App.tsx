@@ -18,7 +18,9 @@ import { ImageEditorModal } from './components/ImageEditorModal';
 import { ThumbPostTab } from './components/ThumbPostTab';
 import { ThumbProTab } from './components/ThumbProTab';
 import { StoryArcTab } from './components/StoryArcTab';
-import { SettingsIcon } from './constants';
+import { HomePage } from './components/HomePage';
+import { ChatbotPage } from './components/ChatbotPage';
+import { SettingsIcon, HomeIcon } from './constants';
 import type { StoryArcState } from './types';
 
 
@@ -26,7 +28,7 @@ const App: React.FC = () => {
   const { t, language } = useI18n();
   const { theme } = useTheme();
   
-  const [activeTab, setActiveTab] = useState<Tab>('design');
+  const [activeTab, setActiveTab] = useState<Tab>('home');
   const [globalModel, setGlobalModel] = useState<AIModel>('gemini-2.5-flash-image');
 
   const loadingMessages = [
@@ -114,6 +116,14 @@ const App: React.FC = () => {
       { id: 'storyArc', label: t('tabStoryArc') },
   ], [t]);
 
+  const workstationTabs = useMemo(() => [
+    { id: 'design', label: t('tabDesign') },
+    { id: 'chatbot', label: t('tabChatbot') },
+    { id: 'thumbPost', label: t('tabThumbPost') },
+    { id: 'thumbPro', label: t('tabThumbPro') },
+    { id: 'storyArc', label: t('tabStoryArc') },
+], [t]);
+
   useEffect(() => {
     const handleShowApiKeyModal = () => setShowApiKeyModal(true);
     window.addEventListener('showApiKeyModal', handleShowApiKeyModal);
@@ -134,7 +144,8 @@ const App: React.FC = () => {
   }, [showApiKeyModal]);
 
   useEffect(() => {
-    const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+    if (activeTab === 'home') return;
+    const activeTabIndex = workstationTabs.findIndex(tab => tab.id === activeTab);
     const activeTabElement = tabsRef.current[activeTabIndex];
     if (activeTabElement) {
         setIndicatorStyle({
@@ -142,7 +153,7 @@ const App: React.FC = () => {
             width: activeTabElement.offsetWidth,
         });
     }
-  }, [activeTab, tabs]);
+  }, [activeTab, workstationTabs]);
 
 
   const progressIntervalRef = useRef<number | null>(null);
@@ -509,6 +520,13 @@ const App: React.FC = () => {
   const isReady = !!primaryMascot?.base64 && !!faceReference?.base64 && (prompt.trim().length > 0 || isSketch || referenceImages.length > 0);
 
   const renderTabContent = () => {
+    if (activeTab === 'home') {
+        return <HomePage 
+            onNavigateToDesign={() => setActiveTab('design')} 
+            onNavigateToChatbot={() => setActiveTab('chatbot')}
+        />;
+    }
+
     switch(activeTab) {
         case 'thumbPro':
             return <ThumbProTab onAddImages={addImagesToHistory} model={globalModel} onEdit={handleOpenImageEditor} onViewDetail={handleOpenLightbox} images={generatedImages} />;
@@ -543,6 +561,8 @@ const App: React.FC = () => {
                         }}
                         onViewDetail={handleOpenLightbox}
                     />;
+        case 'chatbot':
+            return <ChatbotPage onGoBack={() => setActiveTab('home')} />;
         case 'design':
         default:
             return (
@@ -609,19 +629,27 @@ const App: React.FC = () => {
 
   return (
     <div className={`relative w-screen h-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 ${theme === 'dark' || isProActive ? 'bg-zinc-950 text-gray-300' : 'bg-slate-50 text-slate-900'}`}>
+        {activeTab !== 'home' && activeTab !== 'chatbot' ? (
         <div className={`flex-shrink-0 p-2 flex justify-center items-center gap-2 backdrop-blur-sm z-30 border-b relative transition-all duration-500 ${theme === 'dark' || isProActive ? 'bg-zinc-950/80 border-white/5' : 'bg-white/80 border-slate-200'}`}>
             <div className="absolute top-1/2 left-4 -translate-y-1/2 flex items-center gap-2">
-                <div className="hidden sm:block">
-                    <h1 className={`font-black text-lg leading-tight tracking-tighter transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-orange-500' : 'text-black'}`} style={{ fontFamily: "'Lilita One', sans-serif" }}>AI RIKI</h1>
-                    <p className={`text-[10px] font-bold uppercase transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-orange-500/50' : 'text-slate-400'}`}>version 4.0 - update 04/2026</p>
+                <button 
+                    onClick={() => setActiveTab('home')}
+                    className={`p-2 rounded-xl transition-all duration-500 ${theme === 'dark' || isProActive ? 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10' : 'bg-slate-100 text-slate-500 hover:text-black hover:bg-slate-200'}`}
+                    title="Quay lại trang chủ"
+                >
+                    <HomeIcon className="w-5 h-5" />
+                </button>
+                <div className="hidden sm:block ml-2">
+                    <h1 className={`font-black text-lg leading-tight tracking-tighter transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-brand' : 'text-black'}`} style={{ fontFamily: "'Lexend', sans-serif" }}>AI RIKI</h1>
+                    <p className={`text-[10px] font-bold uppercase transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-brand/50' : 'text-slate-400'}`}>version 4.0 - update 04/2026</p>
                 </div>
             </div>
             <div className={`relative flex items-center p-1 rounded-full border shadow-sm overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar transition-all duration-500 ${theme === 'dark' || isProActive ? 'bg-black/40 border-white/10' : 'bg-slate-100 border-slate-200'}`}>
                 <span
-                    className={`absolute h-[calc(100%-8px)] top-1 rounded-full transition-all duration-300 ease-in-out shadow-md ${theme === 'dark' || isProActive ? 'bg-orange-600' : 'bg-black'}`}
+                    className={`absolute h-[calc(100%-8px)] top-1 rounded-full transition-all duration-300 ease-in-out shadow-md ${theme === 'dark' || isProActive ? 'bg-brand' : 'bg-black'}`}
                     style={indicatorStyle}
                 />
-                {tabs.map((tab, index) => (
+                {workstationTabs.map((tab, index) => (
                     <button
                         key={tab.id}
                         ref={el => { tabsRef.current[index] = el }}
@@ -644,9 +672,11 @@ const App: React.FC = () => {
                     isProMode={isProActive}
                     model={globalModel}
                     onModelChange={setGlobalModel}
+                    onGoHome={() => setActiveTab('home')}
                 />
             </div>
         </div>
+        ) : null}
 
         <div className="flex-grow flex relative min-h-0">
           {renderTabContent()}
