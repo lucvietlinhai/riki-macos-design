@@ -623,3 +623,171 @@ export const generateThumbPostImages = async (
       throw error;
     }
   };
+
+export const analyzeStoryToScenes = async (storyText: string, language: Language): Promise<StoryScene[]> => {
+    const ai = getAIClient();
+    const langMap: Record<Language, string> = {
+        vi: 'Vietnamese',
+        en: 'English',
+        ja: 'Japanese',
+        id: 'Indonesian'
+    };
+    const targetLang = langMap[language] || 'English';
+
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: `You are a creative storyboard artist. Analyze the following story and split it into 3 to 5 logical scenes or chapters for illustration.
+            
+            Story: "${storyText}"
+            
+            For each scene, provide:
+            1. title: A short title for the chapter in ${targetLang}.
+            2. description: A brief emotional description of what is happening (1 sentence) in ${targetLang}.
+            3. imagePrompt: A highly descriptive image generation prompt in ${targetLang} that focuses on the environment, mood, and action.
+            
+            Return the result as a JSON array of objects.
+            
+            Example Format:
+            [
+              { "title": "The Arrival", "description": "The character arrives at the mysterious forest.", "imagePrompt": "A lush neon forest with glowing mushrooms..." }
+            ]
+            
+            IMPORTANT: Return ONLY the JSON array. No other text.`
+        });
+        
+        let jsonStr = response.text || "[]";
+        // Basic cleanup in case AI adds markdown
+        jsonStr = jsonStr.replace(/```json/g, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(jsonStr);
+        
+        return parsed.map((item: any, index: number) => ({
+            id: `scene-${Date.now()}-${index}`,
+            chapterNumber: index + 1,
+            title: item.title || `Chapter ${index + 1}`,
+            description: item.description || '',
+            imagePrompt: item.imagePrompt || ''
+        }));
+    } catch (e) {
+        console.error("Failed to analyze story", e);
+        throw e;
+    }
+};
+
+export const continueStoryFromScenes = async (scenes: StoryScene[], language: Language): Promise<StoryScene> => {
+    const ai = getAIClient();
+    const langMap: Record<Language, string> = {
+        vi: 'Vietnamese',
+        en: 'English',
+        ja: 'Japanese',
+        id: 'Indonesian'
+    };
+    const targetLang = langMap[language] || 'English';
+
+    const previousContext = scenes.map(s => `Chapter ${s.chapterNumber}: ${s.title} - ${s.description}`).join('\n');
+
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: `You are a creative storyboard artist. Based on the previous chapters of this story, create ONE next logical scene/chapter.
+            
+            Previous Context:
+            ${previousContext}
+            
+            Provide:
+            1. title: A short title for this new chapter in ${targetLang}.
+            2. description: A brief emotional description of what is happening (1 sentence) in ${targetLang}.
+            3. imagePrompt: A highly descriptive image generation prompt in ${targetLang} that focuses on the environment, mood, and action.
+            
+            Return the result as a single JSON object.
+            
+            Format:
+            { "title": "Next Step", "description": "The character faces a new challenge.", "imagePrompt": "Description..." }
+            
+            IMPORTANT: Return ONLY the JSON object. No other text.`
+        });
+        
+        let jsonStr = response.text || "{}";
+        jsonStr = jsonStr.replace(/```json/g, '').replace(/```/g, '').trim();
+        const item = JSON.parse(jsonStr);
+        
+        return {
+            id: `scene-${Date.now()}`,
+            chapterNumber: scenes.length + 1,
+            title: item.title || `Chapter ${scenes.length + 1}`,
+            description: item.description || '',
+            imagePrompt: item.imagePrompt || ''
+        };
+    } catch (e) {
+        console.error("Failed to continue story", e);
+        throw e;
+    }
+};
+
+export const generateStorySceneImage = async (
+    scene: StoryScene,
+    characterImage: ImageFile,
+    faceReference: ImageFile,
+    characterId: CharacterId,
+    model: AIModel,
+    aspectRatio: '16:9' | '9:16' = '16:9',
+    previousSceneImage?: string
+): Promise<string> => {
+    const ai = getAIClient();
+    let prompt = `Create a 2D flat vector illustration for a story chapter titled "${scene.title}".
+    Scene Description: ${scene.description}
+    Visual Style: 2D Flat Vector, vibrant, cinematic composition.
+    Subject: Feature the character "${characterId}".
+    Environment & Action: ${scene.imagePrompt}
+    Constraint: No 3D, No CGI, No text in the image. High quality, sharp details.
+    `;
+
+    if (previousSceneImage) {
+        prompt += `
+        CONSISTENCY REQUIREMENT:
+        - Refer to the attached "Previous Scene Image". 
+        - Maintain the EXACT SAME character appearance (clothing, colors, face).
+        - Maintain the background style, lighting, and environmental atmosphere for visual continuity.
+        - This new image is the NEXT part of the story, so keep the world cohesive.
+        `;
+    }
+    
+    const parts: any[] = [
+        { text: prompt },
+        { text: "REFERENCE (Mascot Appearance):" },
+        fileToGenerativePart(characterImage),
+        { text: "REFERENCE (Mascot Face):" },
+        fileToGenerativePart(faceReference)
+    ];
+
+    if (previousSceneImage) {
+        const base64 = previousSceneImage.startsWith('data:') ? previousSceneImage.split(',')[1] : previousSceneImage;
+        parts.push({ text: "PREVIOUS SCENE IMAGE (FOR STYLE & CHARACTER CONSISTENCY):" });
+        parts.push({ inlineData: { data: base64, mimeType: 'image/png' } });
+    }
+    
+    try {
+        const response = await ai.models.generateContent({
+            model: model,
+            contents: { parts },
+            config: { 
+                imageConfig: { 
+                    aspectRatio: aspectRatio,
+                    ...(model.includes('pro') ? { imageSize: "2K" } : {})
+                } 
+            }
+        });
+        
+        let imageBase64 = "";
+        if (response.candidates?.[0]?.content?.parts) {
+            for (const part of response.candidates[0].content.parts) {
+                if (part.inlineData?.data) { imageBase64 = part.inlineData.data; break; }
+            }
+        }
+        if (!imageBase64) throw new Error("No image data returned for story scene.");
+        return imageBase64;
+    } catch (error) {
+        console.error("StoryScene Generation Error:", error);
+        throw error;
+    }
+};

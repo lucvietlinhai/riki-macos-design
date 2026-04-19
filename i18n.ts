@@ -4,10 +4,11 @@ import React, { createContext, useContext, useState, useMemo } from 'react';
 export const translations = {
   vi: {
     // Tabs
-    tabDesign: 'Thiết kế Linh vật',
-    tabThumbPost: 'Ảnh Bài viết',
-    tabThumbVideo: 'Ảnh Video',
-    tabThumbPro: 'Thiết kế Thumb Pro',
+    tabDesign: 'TẠO MASCOT',
+    tabThumbPost: 'TẠO ẢNH CONTENT',
+    tabThumbVideo: 'TẠO ẢNH VIDEO',
+    tabThumbPro: 'TẠO ẢNH THUMBNAIL',
+    tabStoryArc: 'STORY TRUYỆN',
     comingSoon: 'Tính năng đang được phát triển...',
 
     // Design Modes
@@ -26,6 +27,7 @@ export const translations = {
     historyTabThumbPost: 'Bài viết',
     historyTabThumbVideo: 'Video',
     historyTabThumbPro: 'Pro',
+    historyTabStory: 'Truyện',
 
     // Loading & Progress
     loadingMessage1: 'Đang khởi tạo...',
@@ -51,6 +53,20 @@ export const translations = {
     billingDocLink: 'Hướng dẫn về API Key',
     connectedStatus: 'Đã kết nối Pro',
     reconnectBtn: 'Đổi Key API',
+
+    // Story Arc
+    storyArcTitle: 'Minh họa Phân đoạn câu truyện',
+    storyArcPlaceholder: 'Nhập nội dung câu truyện của bạn tại đây. AI sẽ tự động phân tích và chia thành các phân đoạn minh họa tương ứng...',
+    storyArcAnalyze: 'Phân tích câu truyện',
+    storyArcAutoGenerate: 'Tự động tạo ảnh',
+    storyArcDeleteScene: 'Xóa phân cảnh',
+    storyArcEmpty: 'Nhập câu truyện để bắt đầu thiết kế từng phân cảnh',
+    storyArcScene: 'Phân cảnh',
+    storyArcPrompt: 'Gợi ý hình ảnh',
+    storyArcRegenerate: 'Tạo lại phân cảnh này',
+    storyArcStyleConsistency: 'Duy trì sự đồng nhất (Consistent Style)',
+    storyArcAutoMagic: 'Sáng tạo lời nhắc tự động',
+    storyArcAddScene: 'Thêm phân cảnh',
 
     // Pro Generator UI
     designModeTab: 'TỰ THIẾT KẾ',
@@ -246,6 +262,7 @@ export const translations = {
     tabThumbPost: 'Post Image',
     tabThumbVideo: 'Video Image',
     tabThumbPro: 'Pro Thumbnail',
+    tabStoryArc: 'Story Arc',
     comingSoon: 'Feature coming soon...',
     modeLabel: 'Design Mode',
     modeFree: 'Free',

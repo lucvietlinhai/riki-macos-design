@@ -3,8 +3,24 @@ import { characters } from './data/characters';
 
 export type AIModel = 'gemini-2.5-flash-image' | 'gemini-3.1-flash-image-preview';
 
-export type Tab = 'design' | 'thumbPost' | 'thumbPro';
+export type Tab = 'design' | 'thumbPost' | 'thumbPro' | 'storyArc';
 export type DesignMode = 'free' | 'concept' | 'reference';
+
+export interface StoryScene {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  description: string;
+  imagePrompt: string;
+  generatedImage?: string;
+  isLoading?: boolean;
+}
+
+export interface StoryArcState {
+  fullStory: string;
+  scenes: StoryScene[];
+  aspectRatio: '16:9' | '9:16';
+}
 
 export interface ImageFile {
   base64: string;

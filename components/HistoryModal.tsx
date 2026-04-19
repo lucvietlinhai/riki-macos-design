@@ -95,6 +95,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                          <div className="flex items-center gap-1 bg-black/10 dark:bg-black/30 p-1 rounded-lg">
                             <HistoryTabButton label={t('historyTabDesign')} isActive={activeTab === 'design'} onClick={() => setActiveTab('design')} count={imageCounts.design || 0} />
                             <HistoryTabButton label={t('historyTabThumbPost')} isActive={activeTab === 'thumbPost'} onClick={() => setActiveTab('thumbPost')} count={imageCounts.thumbPost || 0} />
+                            <HistoryTabButton label={t('tabStoryArc')} isActive={activeTab === 'storyArc'} onClick={() => setActiveTab('storyArc')} count={imageCounts.storyArc || 0} />
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10 transition-colors" aria-label={t('close')}>

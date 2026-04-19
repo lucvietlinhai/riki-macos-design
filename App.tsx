@@ -17,7 +17,9 @@ import { LightboxModal } from './components/LightboxModal';
 import { ImageEditorModal } from './components/ImageEditorModal';
 import { ThumbPostTab } from './components/ThumbPostTab';
 import { ThumbProTab } from './components/ThumbProTab';
+import { StoryArcTab } from './components/StoryArcTab';
 import { SettingsIcon } from './constants';
+import type { StoryArcState } from './types';
 
 
 const App: React.FC = () => {
@@ -91,6 +93,12 @@ const App: React.FC = () => {
   const [showImageEditorModal, setShowImageEditorModal] = useState<boolean>(false);
   const [editingImage, setEditingImage] = useState<GeneratedImage | null>(null);
 
+  const [storyArc, setStoryArc] = useState<StoryArcState>({
+    fullStory: '',
+    scenes: [],
+    aspectRatio: '16:9'
+  });
+
   // API Key handling
   const [showApiKeyModal, setShowApiKeyModal] = useState<boolean>(false);
   const [apiKeyInput, setApiKeyInput] = useState<string>('');
@@ -103,6 +111,7 @@ const App: React.FC = () => {
       { id: 'design', label: t('tabDesign') },
       { id: 'thumbPost', label: t('tabThumbPost') },
       { id: 'thumbPro', label: t('tabThumbPro') },
+      { id: 'storyArc', label: t('tabStoryArc') },
   ], [t]);
 
   useEffect(() => {
@@ -515,6 +524,25 @@ const App: React.FC = () => {
                         model={globalModel}
                         language={language}
                     />;
+        case 'storyArc':
+            return <StoryArcTab
+                        state={storyArc}
+                        onStateChange={setStoryArc}
+                        characterId={characterId}
+                        onCharacterChange={setCharacterId}
+                        model={globalModel}
+                        onImageGenerated={(src) => {
+                            const newImage: GeneratedImage = {
+                                id: `story_${Date.now()}`,
+                                src,
+                                x: 0, y: 0, z: topZ,
+                                sourceTab: 'storyArc'
+                            };
+                            setGeneratedImages(prev => [...prev, newImage]);
+                            setTopZ(prev => prev + 1);
+                        }}
+                        onViewDetail={handleOpenLightbox}
+                    />;
         case 'design':
         default:
             return (
@@ -585,7 +613,7 @@ const App: React.FC = () => {
             <div className="absolute top-1/2 left-4 -translate-y-1/2 flex items-center gap-2">
                 <div className="hidden sm:block">
                     <h1 className={`font-black text-lg leading-tight tracking-tighter transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-orange-500' : 'text-black'}`} style={{ fontFamily: "'Lilita One', sans-serif" }}>AI RIKI</h1>
-                    <p className={`text-[10px] font-bold uppercase transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-orange-500/50' : 'text-slate-400'}`}>Phiên bản 3.0</p>
+                    <p className={`text-[10px] font-bold uppercase transition-colors duration-500 ${theme === 'dark' || isProActive ? 'text-orange-500/50' : 'text-slate-400'}`}>version 4.0 - update 04/2026</p>
                 </div>
             </div>
             <div className={`relative flex items-center p-1 rounded-full border shadow-sm overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar transition-all duration-500 ${theme === 'dark' || isProActive ? 'bg-black/40 border-white/10' : 'bg-slate-100 border-slate-200'}`}>
@@ -598,7 +626,7 @@ const App: React.FC = () => {
                         key={tab.id}
                         ref={el => { tabsRef.current[index] = el }}
                         onClick={() => setActiveTab(tab.id as Tab)}
-                        className={`relative z-10 px-4 py-1.5 text-xs font-black rounded-full transition-colors duration-300 outline-none focus:ring-0 whitespace-nowrap ${
+                        className={`relative z-10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full transition-colors duration-300 outline-none focus:ring-0 whitespace-nowrap ${
                             activeTab === tab.id
                                 ? (theme === 'dark' || isProActive ? 'text-black' : 'text-white')
                                 : (theme === 'dark' || isProActive ? 'text-zinc-500 hover:text-white' : 'text-slate-500 hover:text-black')

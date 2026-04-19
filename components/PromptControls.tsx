@@ -220,19 +220,19 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             <div className="flex bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl">
                  <button 
                     onClick={() => { onDesignModeChange('free'); onReferenceImagesChange([]); }}
-                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'free' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
+                    className={`flex-1 py-2 text-[10px] sm:text-xs font-semibold rounded-lg transition-all ${designMode === 'free' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
                  >
                      {t('modeFree')}
                  </button>
                  <button 
                     onClick={() => { onDesignModeChange('concept'); onReferenceImagesChange([]); }}
-                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'concept' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
+                    className={`flex-1 py-2 text-[10px] sm:text-xs font-semibold rounded-lg transition-all ${designMode === 'concept' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
                  >
                      {t('modeConcept')}
                  </button>
                  <button 
                     onClick={() => { onDesignModeChange('reference'); onReferenceImagesChange([]); }}
-                    className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${designMode === 'reference' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
+                    className={`flex-1 py-2 text-[10px] sm:text-xs font-semibold rounded-lg transition-all ${designMode === 'reference' ? 'bg-white dark:bg-zinc-600 shadow-sm text-orange-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-zinc-400'}`}
                  >
                      {t('modeReference')}
                  </button>
@@ -243,7 +243,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                 <div className="relative">
                     <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
                          <img src={characters.find(c => c.id === characterId)?.face} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
-                         <span className="font-bold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
+                         <span className="font-semibold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
                     </button>
                      {showCharacterPopover && (
                         <div ref={characterPopoverRef} className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-zinc-900 rounded-xl shadow-xl p-2 space-y-1 border border-slate-200 dark:border-white/10 z-50">
