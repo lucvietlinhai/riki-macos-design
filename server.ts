@@ -7,6 +7,7 @@ import { google } from 'googleapis';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import fs from 'fs/promises';
+import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
 
@@ -14,11 +15,48 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const KB_PATH = path.join(__dirname, 'knowledge_base.json');
 
+const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY || '');
+
 const app = express();
 const PORT = 3000;
 
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
+
+// AI Chat Endpoint with Knowledge Base
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages, context } = req.body;
+    
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-2.0-flash",
+        systemInstruction: `Bạn là trợ lý AI thông minh của Riki.
+Nhiệm vụ: Trả lời các câu hỏi dựa TRÊN DUY NHẤT bộ tài liệu được cung cấp phía dưới.
+Nếu câu hỏi không có trong tài liệu, hãy lịch sự trả lời rằng bạn chưa có thông tin về vấn đề này và đề xuất họ liên hệ phòng nhân sự.
+Ngôn ngữ: Tiếng Việt. Thân thiện, chuyên nghiệp.
+
+DỮ LIỆU TÀI LIỆU CÔNG TY:
+${context}`
+    });
+
+    const chat = model.startChat({
+        history: messages.slice(0, -1).map((m: any) => ({
+            role: m.role,
+            parts: m.parts,
+        })),
+    });
+
+    const lastMessage = messages[messages.length - 1].parts[0].text;
+    const result = await chat.sendMessage(lastMessage);
+    const response = await result.response;
+    const text = response.text();
+
+    res.json({ text });
+  } catch (error: any) {
+    console.error('Chat error:', error);
+    res.status(500).json({ error: error.message || 'AI processing failed' });
+  }
+});
 
 // Knowledge Base Persistence
 app.get('/api/kb/load', async (req, res) => {

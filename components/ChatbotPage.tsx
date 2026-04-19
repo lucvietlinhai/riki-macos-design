@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useI18n } from '../i18n';
 import { useTheme } from '../theme';
 import { BotIcon, ExternalIcon, WandIcon, HomeIcon, SettingsIcon } from '../constants';
-import { GoogleGenAI } from "@google/genai";
 import { Send, LogIn, LogOut, FileText, Check, Loader2, Trash2, X } from 'lucide-react';
 
 interface ChatMessage {
@@ -38,8 +37,6 @@ export const ChatbotPage: React.FC<ChatbotPageProps> = ({ onGoBack }) => {
     const [fileContents, setFileContents] = useState<Record<string, string>>({});
     const [serverKB, setServerKB] = useState<{ id: string; name: string; content: string }[]>([]);
     const chatEndRef = useRef<HTMLDivElement>(null);
-
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     useEffect(() => {
         checkAuth();
@@ -158,7 +155,8 @@ export const ChatbotPage: React.FC<ChatbotPageProps> = ({ onGoBack }) => {
         if (!inputValue.trim() || isGenerating) return;
 
         const userMessage: ChatMessage = { role: 'user', parts: [{ text: inputValue }] };
-        setMessages(prev => [...prev, userMessage]);
+        const updatedMessages = [...messages, userMessage];
+        setMessages(updatedMessages);
         setInputValue('');
         setIsGenerating(true);
 
@@ -168,32 +166,26 @@ export const ChatbotPage: React.FC<ChatbotPageProps> = ({ onGoBack }) => {
                 .map(f => `FILE: ${f.name}\nCONTENT:\n${f.content}`)
                 .join('\n\n---\n\n');
 
-            const systemInstruction = `Bạn là Trợ lý HR thông minh của Riki. 
-Nhiệm vụ của bạn là hỗ trợ nhân viên giải đáp các thắc mắc về chính sách, quy định của công ty dựa TRỰC TIẾP trên các tài liệu được cung cấp dưới đây.
-
-NẾU thông tin không có trong tài liệu, hãy trả lời là bạn không tìm thấy thông tin phù hợp trong quy định hiện tại và khuyên nhân viên liên hệ trực tiếp phòng HCNS.
-NẾU có thông tin, hãy trả lời chi tiết và ghi rõ nguồn từ tài liệu nào. Trả lời bằng tiếng Việt lịch sự.
-
-Tài liệu tham khảo:
-${context || 'Chưa có tài liệu quy định được cung cấp.'}`;
-
-            const response = await ai.models.generateContent({
-                model: "gemini-3.1-pro-preview",
-                contents: [
-                    ...messages.map(m => ({ role: m.role, parts: m.parts })),
-                    { role: 'user', parts: [{ text: inputValue }] }
-                ],
-                config: {
-                    systemInstruction,
-                    temperature: 0.3, 
-                }
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: updatedMessages,
+                    context: context || 'Chưa có tài liệu quy định được cung cấp.'
+                })
             });
 
-            const modelMessage: ChatMessage = { role: 'model', parts: [{ text: response.text || '' }] };
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to get response from AI');
+            }
+
+            const data = await res.json();
+            const modelMessage: ChatMessage = { role: 'model', parts: [{ text: data.text || '' }] };
             setMessages(prev => [...prev, modelMessage]);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Chat error', error);
-            setMessages(prev => [...prev, { role: 'model', parts: [{ text: 'Xin lỗi, đã có lỗi xảy ra khi xử lý yêu cầu của bạn.' }] }]);
+            setMessages(prev => [...prev, { role: 'model', parts: [{ text: `Xin lỗi, đã có lỗi xảy ra: ${error.message}` }] }]);
         } finally {
             setIsGenerating(false);
         }
