@@ -12,6 +12,7 @@ import type { ImageFile, BackgroundOption, GeneratedImage, CharacterId, NumVaria
 import { useI18n } from './i18n';
 import type { Language } from './i18n';
 import { Header } from './components/Header';
+import { fetchImageAsBase64 } from './utils/imageLoader';
 import { useTheme } from './theme';
 import { LightboxModal } from './components/LightboxModal';
 import { ImageEditorModal } from './components/ImageEditorModal';
@@ -150,14 +151,21 @@ const App: React.FC = () => {
   const resultDisplayRef = useRef<ResultDisplayHandle>(null);
   
   useEffect(() => {
-    const selectedCharacter = characters.find(c => c.id === characterId);
-    if (selectedCharacter) {
-      const bodyMimeType = selectedCharacter.body.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-      const faceMimeType = selectedCharacter.face.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-
-      setPrimaryMascot({ base64: selectedCharacter.body, mimeType: bodyMimeType });
-      setFaceReference({ base64: selectedCharacter.face, mimeType: faceMimeType });
-    }
+    const loadCharacter = async () => {
+      const selectedCharacter = characters.find(c => c.id === characterId);
+      if (selectedCharacter) {
+        try {
+          const bodyBase64 = await fetchImageAsBase64(selectedCharacter.body);
+          const faceBase64 = await fetchImageAsBase64(selectedCharacter.face);
+          
+          setPrimaryMascot({ base64: bodyBase64, mimeType: bodyBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg' });
+          setFaceReference({ base64: faceBase64, mimeType: faceBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg' });
+        } catch (error) {
+          console.error("Failed to load character assets:", error);
+        }
+      }
+    };
+    loadCharacter();
   }, [characterId]);
 
   const addImagesToHistory = (newImages: Omit<GeneratedImage, 'sourceTab'>[], sourceTab: Tab) => {

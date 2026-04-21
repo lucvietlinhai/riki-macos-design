@@ -116,7 +116,7 @@ export const ThumbPostTab: React.FC<ThumbPostTabProps> = (props) => {
         const faceReference: ImageFile = { base64: selectedCharacter.face, mimeType: faceMimeType };
         
         try {
-            const results = await generateThumbPostImages(characterImage, faceReference, postContent, model, language, includeText);
+            const results = await generateThumbPostImages(characterImage, faceReference, characterId, postContent, model, language, includeText);
             const newImages = results.map((base64, index) => ({
                 id: `thumb_${Date.now()}_${index}`,
                 src: `data:image/png;base64,${base64}`,

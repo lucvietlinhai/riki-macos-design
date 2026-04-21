@@ -51,8 +51,11 @@ export type NumVariations = 1 | 2 | 3 | 4;
 export interface Character {
   id: string;
   name: string;
-  face: string;
-  body: string;
+  face: string; // Base64 or URL path
+  body: string; // Base64 or URL path
+  turnaroundSheet?: string; // Optional: Base64 or URL path
+  expressionSheet?: string; // Optional: Base64 or URL path
+  poseSheet?: string; // Optional: Base64 or URL path
 }
 
 export interface ResultDisplayHandle {

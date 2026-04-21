@@ -117,7 +117,7 @@ export const ThumbVideoTab: React.FC<ThumbVideoTabProps> = (props) => {
         const faceReference: ImageFile = { base64: selectedCharacter.face, mimeType: faceMimeType };
         
         try {
-            const results = await generateThumbVideoImages(characterImage, faceReference, postContent, aspectRatio, model, language, includeText);
+            const results = await generateThumbVideoImages(characterImage, faceReference, characterId, postContent, aspectRatio, model, language, includeText);
             const newImages = results.map((base64, index) => ({
                 id: `vid_thumb_${Date.now()}_${index}`,
                 src: `data:image/png;base64,${base64}`,

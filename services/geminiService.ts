@@ -1,7 +1,54 @@
 
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import type { ImageFile, GeneratedResult, ThumbnailConfig, AspectRatio, BackgroundOption, NumVariations, CharacterId, AIModel, SelectionBox, DesignMode, RemixSettings } from "../types";
+import type { ImageFile, GeneratedResult, ThumbnailConfig, AspectRatio, BackgroundOption, NumVariations, CharacterId, AIModel, SelectionBox, DesignMode, RemixSettings, StoryScene } from "../types";
 import { translations, Language } from "../i18n";
+import { characters } from '../data/characters';
+import { fetchImageAsBase64 } from '../utils/imageLoader';
+
+const loadAdvancedCharacterSheets = async (characterId: string): Promise<any[]> => {
+    const selectedCharacter = characters.find(c => c.id === characterId);
+    if (!selectedCharacter) return [];
+    
+    const parts: any[] = [];
+    
+    if (selectedCharacter.turnaroundSheet) {
+        try {
+            const b64 = await fetchImageAsBase64(selectedCharacter.turnaroundSheet);
+            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
+            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
+            parts.push({ text: "REFERENCE (Turnaround & Body Consistency - Must perfectly adhere to this structural design in all angles):" });
+            parts.push({ inlineData: { data: base64Data, mimeType } });
+        } catch (e) {
+            console.error("Failed to load turnaround sheet", e);
+        }
+    }
+    
+    if (selectedCharacter.expressionSheet) {
+        try {
+            const b64 = await fetchImageAsBase64(selectedCharacter.expressionSheet);
+            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
+            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
+            parts.push({ text: "REFERENCE (Expression & Face Consistency - Must follow these facial states for specific emotions):" });
+            parts.push({ inlineData: { data: base64Data, mimeType } });
+        } catch (e) {
+            console.error("Failed to load expression sheet", e);
+        }
+    }
+    
+    if (selectedCharacter.poseSheet) {
+        try {
+            const b64 = await fetchImageAsBase64(selectedCharacter.poseSheet);
+            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
+            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
+            parts.push({ text: "REFERENCE (Action & Pose Dynamics):" });
+            parts.push({ inlineData: { data: base64Data, mimeType } });
+        } catch (e) {
+            console.error("Failed to load pose sheet", e);
+        }
+    }
+    
+    return parts;
+};
 
 const getAIClient = () => {
     // 1. Try local storage first (user provided)
@@ -359,6 +406,10 @@ export const generateMascotImage = async (
     parts.push({ text: "REFERENCE 2 (Mascot Face): Character's facial structure. **DO NOT COPY THIS EXACT EXPRESSION** (unless it matches the prompt)." });
     parts.push(fileToGenerativePart(faceReference));
     
+    // Inject Advanced Sheets
+    const advancedParts = await loadAdvancedCharacterSheets(characterId);
+    parts.push(...advancedParts);
+    
     // Attach additional references
     if (referenceImages.length > 0) {
       if (designMode === 'reference') {
@@ -516,6 +567,7 @@ const compositeResultBack = async (fullBase64: string, croppedChunkBase64: strin
 export const generateThumbPostImages = async (
     characterImage: ImageFile, 
     faceReference: ImageFile, 
+    characterId: CharacterId,
     postContent: string, 
     model: AIModel,
     language: Language, 
@@ -524,16 +576,19 @@ export const generateThumbPostImages = async (
     const ai = getAIClient();
     const prompt = `Design a creative square 2D social media graphic. 
     Style: 2D Flat Vector Art. 
-    Mascot: Feature the character using provided body and face images. 
+    Mascot: Feature the character "${characterId}" using provided references. 
     Topic: ${postContent}. 
     Avoid all 3D, CGI, and realistic rendering. 
     ${includeText ? "Artistically integrate typography related to the topic." : "Do NOT include any text."}`;
   
-    const parts = [
+    const parts: any[] = [
       { text: prompt },
       fileToGenerativePart(characterImage),
       fileToGenerativePart(faceReference)
     ];
+
+    const advancedParts = await loadAdvancedCharacterSheets(characterId);
+    parts.push(...advancedParts);
   
     try {
       const tasks = Array(4).fill(null).map(() => 
@@ -571,6 +626,7 @@ export const generateThumbPostImages = async (
   export const generateThumbVideoImages = async (
     characterImage: ImageFile, 
     faceReference: ImageFile, 
+    characterId: CharacterId,
     postContent: string, 
     aspectRatio: AspectRatio, 
     model: AIModel,
@@ -580,16 +636,19 @@ export const generateThumbPostImages = async (
     const ai = getAIClient();
     const prompt = `Create a viral 2D video thumbnail. 
     Style: Eye-catching 2D Flat Illustration. 
-    Mascot: Use the provided character body and facial reference. 
+    Mascot: Use the provided character "${characterId}" body and facial reference. 
     Topic: ${postContent}. 
     Strictly No 3D, No CGI, No photorealism.
     ${includeText ? "Include bold, stylized text for the title." : "Cinematic visual, no text."}`;
   
-    const parts = [
+    const parts: any[] = [
       { text: prompt },
       fileToGenerativePart(characterImage),
       fileToGenerativePart(faceReference)
     ];
+
+    const advancedParts = await loadAdvancedCharacterSheets(characterId);
+    parts.push(...advancedParts);
   
     try {
       const tasks = Array(4).fill(null).map(() => 
@@ -759,6 +818,9 @@ export const generateStorySceneImage = async (
         { text: "REFERENCE (Mascot Face):" },
         fileToGenerativePart(faceReference)
     ];
+
+    const advancedParts = await loadAdvancedCharacterSheets(characterId);
+    parts.push(...advancedParts);
 
     if (previousSceneImage) {
         const base64 = previousSceneImage.startsWith('data:') ? previousSceneImage.split(',')[1] : previousSceneImage;
