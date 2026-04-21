@@ -5,6 +5,7 @@ import { LoadingSpinner, SendIcon, SettingsIcon, PencilIcon, AttachmentIcon, Wan
 import { characters } from '../data/characters';
 import { useI18n, Language } from '../i18n';
 import type { Translation } from '../i18n';
+import { resizeImage } from '../utils/imageLoader';
 import { enhancePromptWithAI } from '../services/geminiService';
 import { useTheme } from '../theme';
 
@@ -125,13 +126,15 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
     };
   }, []);
 
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
+  const toBase64 = async (file: File): Promise<string> => {
+    const rawB64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
     });
+    return await resizeImage(rawB64);
+  };
 
   const handlePaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     if (event.clipboardData.files.length > 0) {

@@ -159,8 +159,15 @@ const App: React.FC = () => {
           const bodyBase64 = await fetchImageAsBase64(selectedCharacter.body);
           const faceBase64 = await fetchImageAsBase64(selectedCharacter.face);
           
-          setPrimaryMascot({ base64: bodyBase64, mimeType: bodyBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg' });
-          setFaceReference({ base64: faceBase64, mimeType: faceBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg' });
+          const getMimeType = (b64: string) => {
+              if (b64.startsWith('data:')) {
+                  return b64.split(';')[0].split(':')[1] || 'image/jpeg';
+              }
+              return 'image/jpeg';
+          };
+          
+          setPrimaryMascot({ base64: bodyBase64, mimeType: getMimeType(bodyBase64) });
+          setFaceReference({ base64: faceBase64, mimeType: getMimeType(faceBase64) });
         } catch (error) {
           console.error("Failed to load character assets:", error);
         }

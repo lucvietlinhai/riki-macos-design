@@ -5,45 +5,39 @@ import { translations, Language } from "../i18n";
 import { characters } from '../data/characters';
 import { fetchImageAsBase64 } from '../utils/imageLoader';
 
+const getMimeTypeFromBase64 = (b64: string): string => {
+    if (b64.startsWith('data:')) {
+        const match = b64.match(/^data:([^;]+);base64,/);
+        return match ? match[1] : 'image/jpeg';
+    }
+    return 'image/jpeg';
+};
+
 const loadAdvancedCharacterSheets = async (characterId: string): Promise<any[]> => {
     const selectedCharacter = characters.find(c => c.id === characterId);
     if (!selectedCharacter) return [];
     
     const parts: any[] = [];
     
-    if (selectedCharacter.turnaroundSheet) {
-        try {
-            const b64 = await fetchImageAsBase64(selectedCharacter.turnaroundSheet);
-            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
-            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
-            parts.push({ text: "REFERENCE (Turnaround & Body Consistency - Must perfectly adhere to this structural design in all angles):" });
-            parts.push({ inlineData: { data: base64Data, mimeType } });
-        } catch (e) {
-            console.error("Failed to load turnaround sheet", e);
-        }
-    }
-    
-    if (selectedCharacter.expressionSheet) {
-        try {
-            const b64 = await fetchImageAsBase64(selectedCharacter.expressionSheet);
-            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
-            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
-            parts.push({ text: "REFERENCE (Expression & Face Consistency - Must follow these facial states for specific emotions):" });
-            parts.push({ inlineData: { data: base64Data, mimeType } });
-        } catch (e) {
-            console.error("Failed to load expression sheet", e);
-        }
-    }
-    
-    if (selectedCharacter.poseSheet) {
-        try {
-            const b64 = await fetchImageAsBase64(selectedCharacter.poseSheet);
-            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
-            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
-            parts.push({ text: "REFERENCE (Action & Pose Dynamics):" });
-            parts.push({ inlineData: { data: base64Data, mimeType } });
-        } catch (e) {
-            console.error("Failed to load pose sheet", e);
+    const sheets = [
+        { key: 'turnaroundSheet', label: "REFERENCE (Turnaround & Body Consistency - Must perfectly adhere to this structural design in all angles):" },
+        { key: 'expressionSheet', label: "REFERENCE (Expression & Face Consistency - Must follow these facial states for specific emotions):" },
+        { key: 'poseSheet', label: "REFERENCE (Action & Pose Dynamics):" }
+    ];
+
+    for (const sheet of sheets) {
+        const src = (selectedCharacter as any)[sheet.key];
+        if (src) {
+            try {
+                const b64 = await fetchImageAsBase64(src);
+                const mimeType = getMimeTypeFromBase64(b64);
+                const base64Data = b64.includes(',') ? b64.split(',')[1] : b64;
+                
+                parts.push({ text: sheet.label });
+                parts.push({ inlineData: { data: base64Data, mimeType } });
+            } catch (e) {
+                console.error(`Failed to load sheet ${sheet.key}`, e);
+            }
         }
     }
     
@@ -68,8 +62,9 @@ const getAIClient = () => {
 };
 
 const fileToGenerativePart = (file: ImageFile) => {
-  const base64Data = file.base64.startsWith('data:') ? file.base64.split(',')[1] : file.base64;
-  return { inlineData: { data: base64Data, mimeType: file.mimeType } };
+  const base64Data = file.base64.includes(',') ? file.base64.split(',')[1] : file.base64;
+  const mimeType = file.mimeType || getMimeTypeFromBase64(file.base64);
+  return { inlineData: { data: base64Data, mimeType } };
 };
 
 // Helper to crop image/mask based on selection box before sending to AI
