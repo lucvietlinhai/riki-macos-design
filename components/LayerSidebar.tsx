@@ -42,7 +42,7 @@ export const LayerSidebar: React.FC<LayerSidebarProps> = ({ isOpen, onToggle, ge
                                     onClick={() => onLayerClick(image.id)}
                                     className={`flex items-center gap-2 p-1.5 rounded-md cursor-pointer transition-colors border-2 ${selectedImageIds.includes(image.id) ? 'border-orange-400 bg-orange-500/20' : 'border-transparent hover:bg-slate-300/50 dark:hover:bg-slate-700/50'}`}
                                 >
-                                    <img src={image.src} alt={`${t('imageLayer')} ${index}`} className="w-10 h-10 object-contain rounded bg-white/50 dark:bg-zinc-950/50 flex-shrink-0" />
+                                    <img src={image.src || undefined} alt={`${t('imageLayer')} ${index}`} className="w-10 h-10 object-contain rounded bg-white/50 dark:bg-zinc-950/50 flex-shrink-0" />
                                     <span className="text-xs text-slate-600 dark:text-zinc-300 flex-grow truncate">{`${t('imageLayer')} ${image.id.substring(4, 10)}`}</span>
                                     <div className="flex items-center flex-shrink-0">
                                         <button

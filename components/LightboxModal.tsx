@@ -38,7 +38,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({ imageSrc, onClose 
             </button>
             <div className="flex items-center justify-center min-h-full w-full" onClick={(e) => e.stopPropagation()}>
                 <img 
-                    src={imageSrc} 
+                    src={imageSrc || undefined} 
                     alt={t('generatedMascot')} 
                     className="block rounded-lg shadow-2xl"
                 />

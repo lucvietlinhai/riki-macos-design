@@ -217,7 +217,7 @@ const ImageItem: React.FC<{
           `}
     >
         <div className={`relative w-full h-full ${isDark ? 'bg-black/20' : 'bg-white'} rounded-md overflow-hidden shadow-lg dark:shadow-2xl shadow-slate-400/40 dark:shadow-black/40`}>
-            <img src={image.src} alt={t('generatedMascot')} className="w-full h-full object-contain pointer-events-none select-none" />
+            <img src={image.src || undefined} alt={t('generatedMascot')} className="w-full h-full object-contain pointer-events-none select-none" />
             <div className="absolute top-3 right-3 flex flex-wrap justify-end p-2 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full max-w-[80%]">
                 {onUpdateImageSrc && (
                     <button 

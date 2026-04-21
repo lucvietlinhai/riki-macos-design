@@ -111,7 +111,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, ima
                                     className="relative group aspect-square bg-black/10 backdrop-blur-md rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow border border-white/10"
                                 >
                                     <img 
-                                        src={image.src} 
+                                        src={image.src || undefined} 
                                         alt={`${t('imageLayer')} ${image.id}`} 
                                         className="w-full h-full object-contain"
                                         onClick={() => onImageClick(image)}

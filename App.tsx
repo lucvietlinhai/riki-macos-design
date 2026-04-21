@@ -19,7 +19,7 @@ import { ImageEditorModal } from './components/ImageEditorModal';
 import { ThumbPostTab } from './components/ThumbPostTab';
 import { ThumbProTab } from './components/ThumbProTab';
 import { StoryArcTab } from './components/StoryArcTab';
-import { SettingsIcon } from './constants';
+import { SettingsIcon, TrashIcon } from './constants';
 import type { StoryArcState } from './types';
 
 
@@ -93,6 +93,7 @@ const App: React.FC = () => {
   const [lightboxImageSrc, setLightboxImageSrc] = useState<string | null>(null);
   const [showImageEditorModal, setShowImageEditorModal] = useState<boolean>(false);
   const [editingImage, setEditingImage] = useState<GeneratedImage | null>(null);
+  const [showClearDataModal, setShowClearDataModal] = useState<boolean>(false);
 
   const [storyArc, setStoryArc] = useState<StoryArcState>({
     fullStory: '',
@@ -516,6 +517,28 @@ const App: React.FC = () => {
 
   const isReady = !!primaryMascot?.base64 && !!faceReference?.base64 && (prompt.trim().length > 0 || isSketch || referenceImages.length > 0);
 
+  const handleClearDataClick = () => {
+      setShowClearDataModal(true);
+  };
+
+  const executeClearData = async () => {
+    setGeneratedImages([]);
+    setStoryArc({
+        fullStory: '',
+        scenes: [],
+        aspectRatio: '16:9'
+    });
+    setPrompt('');
+    setReferenceImages([]);
+    setIsSketch(false);
+    try {
+        await set('rikimo_generated_images', []);
+    } catch (e) {
+        console.error("Failed to clear DB", e);
+    }
+    setShowClearDataModal(false);
+  };
+
   const renderTabContent = () => {
     switch(activeTab) {
         case 'thumbPro':
@@ -649,6 +672,7 @@ const App: React.FC = () => {
                     onHistoryClick={() => setShowHistoryModal(true)} 
                     onShortcutsClick={() => setShowShortcutsModal(true)}
                     onApiKeyClick={() => setShowApiKeyModal(true)}
+                    onClearDataClick={handleClearDataClick}
                     isProMode={isProActive}
                     model={globalModel}
                     onModelChange={setGlobalModel}
@@ -722,6 +746,28 @@ const App: React.FC = () => {
                         </button>
                         <button onClick={handleSaveApiKey} disabled={!apiKeyInput.trim()} className="px-6 py-2 rounded-lg font-medium bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-50">
                             Lưu và sử dụng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {showClearDataModal && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 text-slate-800 dark:text-slate-200">
+                <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden max-w-md w-full border border-slate-200 dark:border-white/10 p-6 flex flex-col gap-4">
+                    <h2 className="text-xl font-bold text-red-500 flex items-center gap-2">
+                        <TrashIcon className="w-6 h-6" />
+                        Xác nhận Làm mới Toàn bộ
+                    </h2>
+                    <p className="text-sm dark:text-slate-400 leading-relaxed">
+                        {t('confirmClearData') || "Bạn có chắc chắn muốn làm mới bộ nhớ? Toàn bộ các ảnh đã tạo, kịch bản truyện và mẫu tham chiếu trong phiên này sẽ bị MIẾN MẤT VĨNH VIỄN."}
+                    </p>
+                    <div className="flex justify-end gap-3 mt-4">
+                        <button onClick={() => setShowClearDataModal(false)} className="px-4 py-2 rounded-lg font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors">
+                            Hủy bỏ
+                        </button>
+                        <button onClick={executeClearData} className="px-6 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-500 transition-colors shadow-lg shadow-red-500/30">
+                            Đồng ý, Xóa tất cả
                         </button>
                     </div>
                 </div>

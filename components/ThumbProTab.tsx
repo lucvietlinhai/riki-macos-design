@@ -239,7 +239,7 @@ export const ThumbProTab: React.FC<ThumbProTabProps> = ({ onAddImages, model, on
                                     <div className="space-y-2">
                                         <label className={`text-[10px] font-black ${isDark ? 'text-orange-400' : 'text-zinc-500'} uppercase tracking-[2px] block truncate`}>{t('mainSubjectLabel')}</label>
                                         <div onClick={() => subjectInputRef.current?.click()} className={`aspect-square ${isDark ? 'bg-black border-zinc-800' : 'bg-white border-slate-200'} border-2 border-dashed hover:border-orange-500/50 rounded-2xl flex items-center justify-center cursor-pointer overflow-hidden transition-all group relative`}>
-                                            {config.subjectImage ? <img src={config.subjectImage.base64} className="w-full h-full object-cover" /> : <UploadIcon className={`w-8 h-8 ${isDark ? 'text-zinc-700' : 'text-slate-300'} group-hover:text-orange-500`} />}
+                                            {config.subjectImage ? <img src={config.subjectImage?.base64 || undefined} className="w-full h-full object-cover" /> : <UploadIcon className={`w-8 h-8 ${isDark ? 'text-zinc-700' : 'text-slate-300'} group-hover:text-orange-500`} />}
                                             <input type="file" ref={subjectInputRef} className="hidden" onChange={e => handleFileUpload(e, 'subjectImage')} accept="image/png, image/jpeg, image/webp" />
                                         </div>
                                     </div>
@@ -249,7 +249,7 @@ export const ThumbProTab: React.FC<ThumbProTabProps> = ({ onAddImages, model, on
                                         <div className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-300">
                                             <label className={`text-[10px] font-black ${isDark ? 'text-orange-400' : 'text-zinc-500'} uppercase tracking-[2px] block truncate`} title={t('referenceImgLabel')}>{t('referenceImgLabel')}</label>
                                             <div onClick={() => templateInputRef.current?.click()} className={`aspect-square ${isDark ? 'bg-black border-zinc-800' : 'bg-white border-slate-200'} border-2 border-dashed hover:border-orange-500/50 rounded-2xl flex items-center justify-center cursor-pointer overflow-hidden group relative`}>
-                                                {config.referenceTemplate ? <img src={config.referenceTemplate.base64} className="w-full h-full object-cover" /> : <PhotoIcon className={`w-8 h-8 ${isDark ? 'text-zinc-700' : 'text-slate-300'} group-hover:text-orange-500`} />}
+                                                {config.referenceTemplate ? <img src={config.referenceTemplate?.base64 || undefined} className="w-full h-full object-cover" /> : <PhotoIcon className={`w-8 h-8 ${isDark ? 'text-zinc-700' : 'text-slate-300'} group-hover:text-orange-500`} />}
                                                 <input type="file" ref={templateInputRef} className="hidden" onChange={e => handleFileUpload(e, 'referenceTemplate')} accept="image/png, image/jpeg, image/webp" />
                                             </div>
                                         </div>
@@ -483,7 +483,7 @@ export const ThumbProTab: React.FC<ThumbProTabProps> = ({ onAddImages, model, on
                 ) : resultImage ? (
                     <div className="w-full max-w-6xl space-y-6 animate-in fade-in zoom-in duration-700">
                         <div className={`rounded-[40px] overflow-hidden shadow-2xl border-[12px] ${isDark ? 'border-zinc-800/50 backdrop-blur-xl bg-zinc-800' : 'border-white bg-white shadow-zinc-300/50'} relative group transition-all`}>
-                            <img src={resultImage} className="w-full h-auto" />
+                            <img src={resultImage || undefined} className="w-full h-auto" />
                             <div className={`absolute top-4 right-6 ${isDark ? 'bg-orange-500 text-black' : 'bg-black text-white'} text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-20`}>
                                 {isProModelSelected ? 'PRO VERSION' : 'FLASH VERSION'}
                             </div>

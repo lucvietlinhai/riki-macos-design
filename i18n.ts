@@ -97,6 +97,7 @@ export const translations = {
     keepPose: 'Giữ nguyên tư thế & bố cục',
     
     // Validation Errors
+    confirmClearData: 'Bạn có chắc chắn muốn xóa bộ nhớ lưu trữ hệ thống? Các hình ảnh tạo ra trên phiên này sẽ bị mất để tối ưu bộ nhớ.',
     unsupportedFormat: 'Định dạng tệp không được hỗ trợ.',
     suggestedFormats: 'Vui lòng sử dụng ảnh định dạng .JPG, .PNG hoặc .WEBP để đảm bảo AI xử lý chính xác.',
     fileTooLargeShort: 'Dung lượng tệp vượt quá 4MB.',
@@ -277,6 +278,7 @@ export const translations = {
     remixOptionsLabel: 'Remix Options',
     keepBackground: 'Keep Background',
     keepPose: 'Keep Pose & Layout',
+    confirmClearData: 'Are you sure you want to clear system memory? All generated images in this session will be lost to optimize memory.',
     modelLabel: 'AI Model',
     modelFlash: 'Gemini 2.5 Flash (Fast & Free)',
     modelPro: 'Gemini 3 Pro (High Quality - Needs Key)',

@@ -242,7 +242,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             <div className="flex items-center justify-between">
                 <div className="relative">
                     <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                         <img src={characters.find(c => c.id === characterId)?.face} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
+                         <img src={characters.find(c => c.id === characterId)?.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
                          <span className="font-semibold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
                     </button>
                      {showCharacterPopover && (
@@ -255,7 +255,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                                     title={char.id === 'hankimo' || char.id === 'rikimi' ? "Đang bảo trì" : ""}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <img src={char.face} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
+                                        <img src={char.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
                                         <span className={`text-sm font-medium ${char.id === 'hankimo' || char.id === 'rikimi' ? 'opacity-50' : ''}`}>{char.name}</span>
                                     </div>
                                     {(char.id === 'hankimo' || char.id === 'rikimi') && (
@@ -328,7 +328,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                         <label className="text-xs font-bold text-orange-500 dark:text-orange-400 uppercase tracking-wide">{t('uploadRefImage')}</label>
                         <div onClick={handleUploadClick} className="relative aspect-[4/3] bg-orange-50 dark:bg-orange-900/20 border-2 border-dashed border-orange-200 dark:border-orange-700/50 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-all group overflow-hidden">
                              {referenceImages.length > 0 ? (
-                                 <img src={referenceImages[0].base64} alt="Ref" className="w-full h-full object-cover" />
+                                 <img src={referenceImages[0]?.base64 || undefined} alt="Ref" className="w-full h-full object-cover" />
                              ) : (
                                  <div className="flex flex-col items-center gap-2 text-orange-400 dark:text-orange-300">
                                      <UploadIcon className="w-8 h-8" />
@@ -408,7 +408,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                     <div className="flex flex-wrap gap-2 p-2 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-slate-100 dark:border-white/10/50">
                         {referenceImages.map((image, index) => (
                             <div key={index} className="relative w-16 h-16 bg-white dark:bg-zinc-700 rounded-lg p-1 shadow-sm border border-slate-200 dark:border-zinc-600 group">
-                                <img src={image.base64} alt={`Ref ${index + 1}`} className="w-full h-full object-contain rounded-md" />
+                                <img src={image.base64 || undefined} alt={`Ref ${index + 1}`} className="w-full h-full object-contain rounded-md" />
                                 <button
                                     onClick={() => handleRemoveReferenceImage(index)}
                                     className="absolute -top-1.5 -right-1.5 bg-white text-red-500 border border-slate-200 rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50"

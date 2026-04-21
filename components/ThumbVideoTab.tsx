@@ -44,7 +44,7 @@ const GridImageItem: React.FC<{
 
     return (
         <div className="relative group bg-slate-300 dark:bg-zinc-900 rounded-lg overflow-hidden border border-slate-300 dark:border-white/10 shadow-md">
-            <img src={image.src} alt={`Thumbnail ${image.id}`} className="w-full h-full object-cover" />
+            <img src={image.src || undefined} alt={`Thumbnail ${image.id}`} className="w-full h-full object-cover" />
             <div className="absolute top-2 right-2 flex flex-col items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <button onClick={() => onEdit(image)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('editImage')} > <WandIcon className="w-5 h-5" /> </button>
                 <button onClick={() => onView(image.src)} className={`${buttonClass} hover:bg-orange-500/80`} title={t('viewDetail')} > <MaximizeIcon className="w-5 h-5" /> </button>

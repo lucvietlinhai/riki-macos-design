@@ -78,7 +78,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ title, description
         />
         {preview ? (
           <>
-            <img src={preview} alt={t('referenceImage')} className="max-h-full max-w-full object-contain rounded-md" />
+            <img src={preview || undefined} alt={t('referenceImage')} className="max-h-full max-w-full object-contain rounded-md" />
             <button
               onClick={handleClear}
               className="absolute top-1.5 right-1.5 bg-red-600/80 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
