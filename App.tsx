@@ -160,10 +160,8 @@ const App: React.FC = () => {
           const faceBase64 = await fetchImageAsBase64(selectedCharacter.face);
           
           const getMimeType = (b64: string) => {
-              if (b64.startsWith('data:')) {
-                  return b64.split(';')[0].split(':')[1] || 'image/jpeg';
-              }
-              return 'image/jpeg';
+              const match = b64.match(/^data:([^;]+);base64,/);
+              return match ? match[1] : 'image/jpeg';
           };
           
           setPrimaryMascot({ base64: bodyBase64, mimeType: getMimeType(bodyBase64) });

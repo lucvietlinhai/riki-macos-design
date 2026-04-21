@@ -10,7 +10,15 @@ const getMimeTypeFromBase64 = (b64: string): string => {
         const match = b64.match(/^data:([^;]+);base64,/);
         return match ? match[1] : 'image/jpeg';
     }
+    // Deep sniff for base64 only strings
+    if (b64.startsWith('iVBOR')) return 'image/png';
+    if (b64.startsWith('/9j/')) return 'image/jpeg';
     return 'image/jpeg';
+};
+
+const normalizeBase64 = (b64: string): string => {
+    // Remove data:prefix and all whitespace/newlines that could break the API call
+    return b64.includes(',') ? b64.split(',')[1].replace(/\s/g, '') : b64.replace(/\s/g, '');
 };
 
 const loadAdvancedCharacterSheets = async (characterId: string): Promise<any[]> => {
@@ -31,7 +39,7 @@ const loadAdvancedCharacterSheets = async (characterId: string): Promise<any[]> 
             try {
                 const b64 = await fetchImageAsBase64(src);
                 const mimeType = getMimeTypeFromBase64(b64);
-                const base64Data = b64.includes(',') ? b64.split(',')[1] : b64;
+                const base64Data = normalizeBase64(b64);
                 
                 parts.push({ text: sheet.label });
                 parts.push({ inlineData: { data: base64Data, mimeType } });
@@ -62,7 +70,7 @@ const getAIClient = () => {
 };
 
 const fileToGenerativePart = (file: ImageFile) => {
-  const base64Data = file.base64.includes(',') ? file.base64.split(',')[1] : file.base64;
+  const base64Data = normalizeBase64(file.base64);
   const mimeType = file.mimeType || getMimeTypeFromBase64(file.base64);
   return { inlineData: { data: base64Data, mimeType } };
 };
@@ -427,21 +435,23 @@ export const generateMascotImage = async (
     }
   
     try {
-      // Execute multiple requests in parallel to generate variations
-      const tasks = Array(numVariations).fill(null).map(() => 
-          ai.models.generateContent({
-            model: model,
-            contents: { parts },
-            config: {
-              imageConfig: {
-                aspectRatio: finalAspectRatio === 'keep' ? '1:1' : (finalAspectRatio as any),
-                ...(model.includes('pro') ? { imageSize: "2K" } : {})
-              }
+      const responses: GenerateContentResponse[] = [];
+      
+      // Execute requests sequentially to avoid massive payload spikes that can trigger 400 errors or rate limits
+      // This is safer for heavy payloads with multiple reference images
+      for (let i = 0; i < numVariations; i++) {
+        const response = await ai.models.generateContent({
+          model: model,
+          contents: { parts },
+          config: {
+            imageConfig: {
+              aspectRatio: finalAspectRatio === 'keep' ? '1:1' : (finalAspectRatio as any),
+              ...(model.includes('pro') ? { imageSize: "2K" } : {})
             }
-          })
-      );
-
-      const responses = await Promise.all(tasks);
+          }
+        });
+        responses.push(response);
+      }
       const images: string[] = [];
 
       responses.forEach(response => {
@@ -586,8 +596,9 @@ export const generateThumbPostImages = async (
     parts.push(...advancedParts);
   
     try {
-      const tasks = Array(4).fill(null).map(() => 
-        ai.models.generateContent({
+      const responses: GenerateContentResponse[] = [];
+      for (let i = 0; i < 4; i++) {
+        const response = await ai.models.generateContent({
           model: model,
           contents: { parts },
           config: { 
@@ -596,10 +607,9 @@ export const generateThumbPostImages = async (
                   ...(model.includes('pro') ? { imageSize: "2K" } : {})
               } 
           }
-        })
-      );
-  
-      const responses = await Promise.all(tasks);
+        });
+        responses.push(response);
+      }
       const images: string[] = [];
   
       responses.forEach(res => {
@@ -646,8 +656,9 @@ export const generateThumbPostImages = async (
     parts.push(...advancedParts);
   
     try {
-      const tasks = Array(4).fill(null).map(() => 
-        ai.models.generateContent({
+      const responses: GenerateContentResponse[] = [];
+      for (let i = 0; i < 4; i++) {
+        const response = await ai.models.generateContent({
           model: model,
           contents: { parts },
           config: { 
@@ -656,10 +667,9 @@ export const generateThumbPostImages = async (
                   ...(model.includes('pro') ? { imageSize: "2K" } : {}) 
               } 
           }
-        })
-      );
-  
-      const responses = await Promise.all(tasks);
+        });
+        responses.push(response);
+      }
       const images: string[] = [];
   
       responses.forEach(res => {
@@ -818,9 +828,10 @@ export const generateStorySceneImage = async (
     parts.push(...advancedParts);
 
     if (previousSceneImage) {
-        const base64 = previousSceneImage.startsWith('data:') ? previousSceneImage.split(',')[1] : previousSceneImage;
+        const base64 = normalizeBase64(previousSceneImage);
+        const mimeType = getMimeTypeFromBase64(previousSceneImage);
         parts.push({ text: "PREVIOUS SCENE IMAGE (FOR STYLE & CHARACTER CONSISTENCY):" });
-        parts.push({ inlineData: { data: base64, mimeType: 'image/png' } });
+        parts.push({ inlineData: { data: base64, mimeType } });
     }
     
     try {

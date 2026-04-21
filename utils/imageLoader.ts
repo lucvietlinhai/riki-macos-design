@@ -1,11 +1,12 @@
-export const resizeImage = async (base64Str: string, maxDimension: number = 1024): Promise<string> => {
+export const resizeImage = async (base64Str: string, maxDimension: number = 768): Promise<string> => {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             let width = img.width;
             let height = img.height;
 
-            if (width <= maxDimension && height <= maxDimension) {
+            if (width <= maxDimension && height <= maxDimension && base64Str.startsWith('data:image/jpeg')) {
+                // If it's already jpeg and small enough, no need to re-encode
                 resolve(base64Str);
                 return;
             }
@@ -30,8 +31,13 @@ export const resizeImage = async (base64Str: string, maxDimension: number = 1024
                 resolve(base64Str);
                 return;
             }
+            // Fill with white background (in case of PNG transparency being lost in JPEG conversion)
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, width, height);
             ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/png'));
+            
+            // Use image/jpeg with 0.8 quality to significantly reduce payload size
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
         };
         img.onerror = () => resolve(base64Str);
         img.src = base64Str;
