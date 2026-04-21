@@ -245,7 +245,12 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             <div className="flex items-center justify-between">
                 <div className="relative">
                     <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                         <img src={characters.find(c => c.id === characterId)?.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
+                         <img 
+                            src={characters.find(c => c.id === characterId)?.face || undefined} 
+                            className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" 
+                            alt="Current character" 
+                            referrerPolicy="no-referrer"
+                         />
                          <span className="font-semibold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
                     </button>
                      {showCharacterPopover && (

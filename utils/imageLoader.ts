@@ -49,9 +49,22 @@ export const fetchImageAsBase64 = async (src: string): Promise<string> => {
         return src;
     }
     
+    // Ensure the path is absolute relative to the site root for reliability
+    const fetchUrl = (src.startsWith('/') && !src.startsWith('//')) 
+        ? `${window.location.origin}${src}` 
+        : src;
+
     try {
-        const response = await fetch(src);
-        if (!response.ok) throw new Error(`Failed to fetch image: ${src} (Status: ${response.status})`);
+        const response = await fetch(fetchUrl);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${fetchUrl} (Status: ${response.status})`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (contentType && !contentType.startsWith('image/')) {
+            throw new Error(`Fetched resource is not an image: ${fetchUrl} (Type: ${contentType})`);
+        }
+
         const blob = await response.blob();
         
         const base64 = await new Promise<string>((resolve, reject) => {
