@@ -5,7 +5,6 @@ import { LoadingSpinner, SendIcon, SettingsIcon, PencilIcon, AttachmentIcon, Wan
 import { characters } from '../data/characters';
 import { useI18n, Language } from '../i18n';
 import type { Translation } from '../i18n';
-import { resizeImage } from '../utils/imageLoader';
 import { enhancePromptWithAI } from '../services/geminiService';
 import { useTheme } from '../theme';
 
@@ -126,15 +125,13 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
     };
   }, []);
 
-  const toBase64 = async (file: File): Promise<string> => {
-    const rawB64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = (error) => reject(error);
+  const toBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
     });
-    return await resizeImage(rawB64);
-  };
 
   const handlePaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     if (event.clipboardData.files.length > 0) {
@@ -245,12 +242,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             <div className="flex items-center justify-between">
                 <div className="relative">
                     <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                         <img 
-                            src={characters.find(c => c.id === characterId)?.face || undefined} 
-                            className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" 
-                            alt="Current character" 
-                            referrerPolicy="no-referrer"
-                         />
+                         <img src={characters.find(c => c.id === characterId)?.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
                          <span className="font-semibold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
                     </button>
                      {showCharacterPopover && (

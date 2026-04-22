@@ -6,20 +6,15 @@ import { hankimoBodyBase64 } from './hankimo/body';
 import { rikimiFaceBase64 } from './rikimi/face';
 import { rikimiBodyBase64 } from './rikimi/body';
 
-import { rikimoNewFaceBase64 } from './rikimo-new/face';
-import { rikimoNewBodyBase64 } from './rikimo-new/body';
-
-export { rikimoFaceBase64, rikimoBodyBase64, rikimiFaceBase64, rikimiBodyBase64 };
-
 export const characters: Character[] = [
   {
     id: 'rikimo-new',
     name: 'Rikimo New',
-    face: rikimoNewFaceBase64,
-    body: rikimoNewBodyBase64,
-    turnaroundSheet: rikimoNewFaceBase64, // Fallback placeholder
-    expressionSheet: rikimoNewFaceBase64, // Fallback placeholder
-    poseSheet: rikimoNewFaceBase64       // Fallback placeholder
+    face: '/characters/rikimo-new/face.png',
+    body: '/characters/rikimo-new/body.png',
+    turnaroundSheet: '/characters/rikimo-new/turnaround.png',
+    expressionSheet: '/characters/rikimo-new/expression.png',
+    poseSheet: '/characters/rikimo-new/pose.png'
   },
   {
     id: 'rikimo',

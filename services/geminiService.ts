@@ -5,47 +5,45 @@ import { translations, Language } from "../i18n";
 import { characters } from '../data/characters';
 import { fetchImageAsBase64 } from '../utils/imageLoader';
 
-const getMimeTypeFromBase64 = (b64: string): string => {
-    if (b64.startsWith('data:')) {
-        const match = b64.match(/^data:([^;]+);base64,/);
-        return match ? match[1] : 'image/jpeg';
-    }
-    // Deep sniff for base64 only strings
-    if (b64.startsWith('iVBOR')) return 'image/png';
-    if (b64.startsWith('/9j/')) return 'image/jpeg';
-    return 'image/jpeg';
-};
-
-const normalizeBase64 = (b64: string): string => {
-    // Remove data:prefix and all whitespace/newlines that could break the API call
-    return b64.includes(',') ? b64.split(',')[1].replace(/\s/g, '') : b64.replace(/\s/g, '');
-};
-
 const loadAdvancedCharacterSheets = async (characterId: string): Promise<any[]> => {
     const selectedCharacter = characters.find(c => c.id === characterId);
     if (!selectedCharacter) return [];
     
     const parts: any[] = [];
     
-    const sheets = [
-        { key: 'turnaroundSheet', label: "REFERENCE (Turnaround & Body Consistency - Must perfectly adhere to this structural design in all angles):" },
-        { key: 'expressionSheet', label: "REFERENCE (Expression & Face Consistency - Must follow these facial states for specific emotions):" },
-        { key: 'poseSheet', label: "REFERENCE (Action & Pose Dynamics):" }
-    ];
-
-    for (const sheet of sheets) {
-        const src = (selectedCharacter as any)[sheet.key];
-        if (src) {
-            try {
-                const b64 = await fetchImageAsBase64(src);
-                const mimeType = getMimeTypeFromBase64(b64);
-                const base64Data = normalizeBase64(b64);
-                
-                parts.push({ text: sheet.label });
-                parts.push({ inlineData: { data: base64Data, mimeType } });
-            } catch (e) {
-                console.error(`Failed to load sheet ${sheet.key}`, e);
-            }
+    if (selectedCharacter.turnaroundSheet) {
+        try {
+            const b64 = await fetchImageAsBase64(selectedCharacter.turnaroundSheet);
+            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
+            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
+            parts.push({ text: "REFERENCE (Turnaround & Body Consistency - Must perfectly adhere to this structural design in all angles):" });
+            parts.push({ inlineData: { data: base64Data, mimeType } });
+        } catch (e) {
+            console.error("Failed to load turnaround sheet", e);
+        }
+    }
+    
+    if (selectedCharacter.expressionSheet) {
+        try {
+            const b64 = await fetchImageAsBase64(selectedCharacter.expressionSheet);
+            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
+            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
+            parts.push({ text: "REFERENCE (Expression & Face Consistency - Must follow these facial states for specific emotions):" });
+            parts.push({ inlineData: { data: base64Data, mimeType } });
+        } catch (e) {
+            console.error("Failed to load expression sheet", e);
+        }
+    }
+    
+    if (selectedCharacter.poseSheet) {
+        try {
+            const b64 = await fetchImageAsBase64(selectedCharacter.poseSheet);
+            const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
+            const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
+            parts.push({ text: "REFERENCE (Action & Pose Dynamics):" });
+            parts.push({ inlineData: { data: base64Data, mimeType } });
+        } catch (e) {
+            console.error("Failed to load pose sheet", e);
         }
     }
     
@@ -70,9 +68,8 @@ const getAIClient = () => {
 };
 
 const fileToGenerativePart = (file: ImageFile) => {
-  const base64Data = normalizeBase64(file.base64);
-  const mimeType = file.mimeType || getMimeTypeFromBase64(file.base64);
-  return { inlineData: { data: base64Data, mimeType } };
+  const base64Data = file.base64.startsWith('data:') ? file.base64.split(',')[1] : file.base64;
+  return { inlineData: { data: base64Data, mimeType: file.mimeType } };
 };
 
 // Helper to crop image/mask based on selection box before sending to AI
@@ -435,23 +432,21 @@ export const generateMascotImage = async (
     }
   
     try {
-      const responses: GenerateContentResponse[] = [];
-      
-      // Execute requests sequentially to avoid massive payload spikes that can trigger 400 errors or rate limits
-      // This is safer for heavy payloads with multiple reference images
-      for (let i = 0; i < numVariations; i++) {
-        const response = await ai.models.generateContent({
-          model: model,
-          contents: { parts },
-          config: {
-            imageConfig: {
-              aspectRatio: finalAspectRatio === 'keep' ? '1:1' : (finalAspectRatio as any),
-              ...(model.includes('pro') ? { imageSize: "2K" } : {})
+      // Execute multiple requests in parallel to generate variations
+      const tasks = Array(numVariations).fill(null).map(() => 
+          ai.models.generateContent({
+            model: model,
+            contents: { parts },
+            config: {
+              imageConfig: {
+                aspectRatio: finalAspectRatio === 'keep' ? '1:1' : (finalAspectRatio as any),
+                ...(model.includes('pro') ? { imageSize: "2K" } : {})
+              }
             }
-          }
-        });
-        responses.push(response);
-      }
+          })
+      );
+
+      const responses = await Promise.all(tasks);
       const images: string[] = [];
 
       responses.forEach(response => {
@@ -596,9 +591,8 @@ export const generateThumbPostImages = async (
     parts.push(...advancedParts);
   
     try {
-      const responses: GenerateContentResponse[] = [];
-      for (let i = 0; i < 4; i++) {
-        const response = await ai.models.generateContent({
+      const tasks = Array(4).fill(null).map(() => 
+        ai.models.generateContent({
           model: model,
           contents: { parts },
           config: { 
@@ -607,9 +601,10 @@ export const generateThumbPostImages = async (
                   ...(model.includes('pro') ? { imageSize: "2K" } : {})
               } 
           }
-        });
-        responses.push(response);
-      }
+        })
+      );
+  
+      const responses = await Promise.all(tasks);
       const images: string[] = [];
   
       responses.forEach(res => {
@@ -656,9 +651,8 @@ export const generateThumbPostImages = async (
     parts.push(...advancedParts);
   
     try {
-      const responses: GenerateContentResponse[] = [];
-      for (let i = 0; i < 4; i++) {
-        const response = await ai.models.generateContent({
+      const tasks = Array(4).fill(null).map(() => 
+        ai.models.generateContent({
           model: model,
           contents: { parts },
           config: { 
@@ -667,9 +661,10 @@ export const generateThumbPostImages = async (
                   ...(model.includes('pro') ? { imageSize: "2K" } : {}) 
               } 
           }
-        });
-        responses.push(response);
-      }
+        })
+      );
+  
+      const responses = await Promise.all(tasks);
       const images: string[] = [];
   
       responses.forEach(res => {
@@ -828,10 +823,9 @@ export const generateStorySceneImage = async (
     parts.push(...advancedParts);
 
     if (previousSceneImage) {
-        const base64 = normalizeBase64(previousSceneImage);
-        const mimeType = getMimeTypeFromBase64(previousSceneImage);
+        const base64 = previousSceneImage.startsWith('data:') ? previousSceneImage.split(',')[1] : previousSceneImage;
         parts.push({ text: "PREVIOUS SCENE IMAGE (FOR STYLE & CHARACTER CONSISTENCY):" });
-        parts.push({ inlineData: { data: base64, mimeType } });
+        parts.push({ inlineData: { data: base64, mimeType: 'image/png' } });
     }
     
     try {
