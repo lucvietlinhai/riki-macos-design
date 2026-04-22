@@ -81,6 +81,7 @@ const App: React.FC = () => {
 
   const [progress, setProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [humanFaceImage, setHumanFaceImage] = useState<ImageFile | null>(null);
   const [isSketch, setIsSketch] = useState<boolean>(false);
   const [showSketchModal, setShowSketchModal] = useState<boolean>(false);
   const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
@@ -217,7 +218,8 @@ const App: React.FC = () => {
       globalModel,
       lang,
       designMode,
-      remixSettings
+      remixSettings,
+      humanFaceImage || undefined
     ).then(result => {
         if (result.images && result.images.length > 0) {
             const newImages: GeneratedImage[] = [];
@@ -598,6 +600,8 @@ const App: React.FC = () => {
                                 onAspectRatioChange={setAspectRatio}
                                 characterId={characterId}
                                 onCharacterChange={setCharacterId}
+                                humanFaceImage={humanFaceImage}
+                                onHumanFaceImageChange={setHumanFaceImage}
                                 designMode={designMode}
                                 onDesignModeChange={setDesignMode}
                                 remixSettings={remixSettings}

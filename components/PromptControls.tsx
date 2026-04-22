@@ -1,12 +1,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import type { ImageFile, BackgroundOption, CharacterId, NumVariations, AspectRatio, DesignMode, RemixSettings } from '../types';
-import { LoadingSpinner, SendIcon, SettingsIcon, PencilIcon, AttachmentIcon, WandIcon, UploadIcon, CheckIcon, SpinnerIcon } from '../constants';
+import { LoadingSpinner, SendIcon, SettingsIcon, PencilIcon, AttachmentIcon, WandIcon, UploadIcon, CheckIcon, SpinnerIcon, TrashIcon } from '../constants';
 import { characters } from '../data/characters';
 import { useI18n, Language } from '../i18n';
 import type { Translation } from '../i18n';
 import { enhancePromptWithAI } from '../services/geminiService';
 import { useTheme } from '../theme';
+import { resolveAssetPath } from '../utils/imageLoader';
 
 interface PromptControlsProps {
   prompt: string;
@@ -30,6 +31,8 @@ interface PromptControlsProps {
   onDesignModeChange: (mode: DesignMode) => void;
   remixSettings: RemixSettings;
   onRemixSettingsChange: (settings: RemixSettings) => void;
+  humanFaceImage: ImageFile | null;
+  onHumanFaceImageChange: (file: ImageFile | null) => void;
   isSidebar?: boolean;
 }
 
@@ -63,7 +66,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
     onOpenSketchModal, isSketch,
     numVariations, onNumVariationsChange, aspectRatio, onAspectRatioChange,
     characterId, onCharacterChange, designMode, onDesignModeChange, isSidebar,
-    remixSettings, onRemixSettingsChange
+    remixSettings, onRemixSettingsChange, humanFaceImage, onHumanFaceImageChange
   } = props;
     
   const { t, language } = useI18n();
@@ -72,6 +75,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
   const [showCharacterPopover, setShowCharacterPopover] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const faceInputRef = useRef<HTMLInputElement>(null);
 
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const settingsPopoverRef = useRef<HTMLDivElement>(null);
@@ -205,6 +209,23 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
     fileInputRef.current?.click();
   };
 
+  const handleFaceUploadClick = () => {
+    faceInputRef.current?.click();
+  };
+
+  const handleFaceFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        if (file.size > 4 * 1024 * 1024) {
+            alert(t('fileTooLarge'));
+            return;
+        }
+        const base64 = await toBase64(file);
+        onHumanFaceImageChange({ base64, mimeType: file.type });
+    }
+    if (faceInputRef.current) faceInputRef.current.value = "";
+  };
+
   const handleRemoveReferenceImage = (index: number) => {
     onReferenceImagesChange(referenceImages.filter((_, i) => i !== index));
   }
@@ -238,11 +259,99 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                  </button>
             </div>
 
+            {/* Hybrid Face Mode UI (Only in Free Mode) - IN ITS OWN ROW ABOVE CHARACTER SELECTOR */}
+            {designMode === 'free' && (
+                <div className="flex flex-col gap-2.5 group/hybrid px-3 py-4 bg-orange-50/30 dark:bg-orange-500/5 rounded-2xl border border-orange-100 dark:border-orange-500/10 mx-1 mb-4 shadow-sm">
+                    <div className="flex items-center justify-between px-1">
+                        <div className="flex items-center gap-2">
+                             <div className="px-1.5 py-0.5 bg-orange-500 text-[8px] font-black text-white rounded uppercase tracking-wider animate-pulse">Hybrid</div>
+                            <label className="text-[10px] font-black text-slate-600 dark:text-zinc-300 uppercase tracking-[0.15em] whitespace-nowrap">{t('humanFaceLabel')}</label>
+                        </div>
+                        {humanFaceImage && (
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); onHumanFaceImageChange(null); }}
+                                className="text-[10px] font-bold text-red-500 hover:text-red-600 dark:text-red-400/70 dark:hover:text-red-400 flex items-center gap-1 transition-colors"
+                            >
+                                <TrashIcon className="w-3 h-3" />
+                                <span>{t('clear')}</span>
+                            </button>
+                        )}
+                    </div>
+                    
+                    <div 
+                        onClick={handleFaceUploadClick}
+                        className={`relative overflow-hidden cursor-pointer group transition-all duration-500 rounded-2xl border-2 border-dashed ${
+                            humanFaceImage 
+                            ? 'border-orange-500/50 bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/20 dark:to-zinc-900 shadow-[0_4px_20px_-4px_rgba(249,115,22,0.15)] dark:shadow-none' 
+                            : 'border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-zinc-900/50 hover:border-orange-400 dark:hover:border-orange-500/50 hover:bg-white dark:hover:bg-zinc-800'
+                        }`}
+                    >
+                        <div className="flex items-center gap-4 p-3.5 pr-4">
+                            <div className={`relative flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-500 ${
+                                humanFaceImage 
+                                ? 'ring-4 ring-orange-500/20 scale-100 shadow-lg' 
+                                : 'bg-white dark:bg-zinc-800 shadow-sm border border-slate-100 dark:border-white/5'
+                            }`}>
+                                {humanFaceImage ? (
+                                    <img 
+                                        src={humanFaceImage.base64} 
+                                        className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-115" 
+                                        alt="Human Face Preview" 
+                                    />
+                                ) : (
+                                    <div className="flex flex-col items-center">
+                                        <UploadIcon className="w-7 h-7 text-slate-300 dark:text-zinc-600 group-hover:text-orange-500 transition-colors duration-300" />
+                                    </div>
+                                )}
+                                
+                                {humanFaceImage && (
+                                    <div className="absolute inset-0 bg-orange-600/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[1px]">
+                                        <PencilIcon className="w-6 h-6 text-white drop-shadow-md" />
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <div className="flex-grow min-w-0">
+                                <div className="flex flex-col">
+                                    <div className="flex items-center gap-1.5 mb-1">
+                                        <span className={`text-[13px] font-black tracking-tight leading-tight ${
+                                            humanFaceImage ? 'text-orange-600 dark:text-orange-400' : 'text-slate-800 dark:text-zinc-200 group-hover:text-orange-600 dark:group-hover:text-orange-500'
+                                        }`}>
+                                            {humanFaceImage ? t('changeFace') : t('uploadFace')}
+                                        </span>
+                                        {humanFaceImage && <div className="w-1 h-1 rounded-full bg-orange-500" />}
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-medium leading-relaxed line-clamp-2">
+                                        {humanFaceImage ? t('hybridDesc') : t('hybridNote')}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            {!humanFaceImage && (
+                                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-200/50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-orange-500 group-hover:shadow-[0_0_15px_rgba(249,115,22,0.4)] transition-all duration-300">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-white group-hover:scale-75 transition-transform" />
+                                </div>
+                            )}
+                            {humanFaceImage && (
+                                <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/30 transform -rotate-3">
+                                    <CheckIcon className="w-4 h-4 text-white" />
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Decorative background element */}
+                        {!humanFaceImage && (
+                            <div className="absolute -right-6 -bottom-6 w-20 h-20 bg-orange-500/5 rounded-full blur-3xl group-hover:bg-orange-500/10 transition-all duration-500" />
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* 1. Character & Basic Settings Header */}
             <div className="flex items-center justify-between">
                 <div className="relative">
                     <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                         <img src={characters.find(c => c.id === characterId)?.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
+                         <img src={resolveAssetPath(characters.find(c => c.id === characterId)?.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
                          <span className="font-semibold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
                     </button>
                      {showCharacterPopover && (
@@ -255,7 +364,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                                     title={char.id === 'hankimo' || char.id === 'rikimi' ? "Đang bảo trì" : ""}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <img src={char.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
+                                        <img src={resolveAssetPath(char.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
                                         <span className={`text-sm font-medium ${char.id === 'hankimo' || char.id === 'rikimi' ? 'opacity-50' : ''}`}>{char.name}</span>
                                     </div>
                                     {(char.id === 'hankimo' || char.id === 'rikimi') && (
@@ -450,6 +559,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             </div>
             
             <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/png, image/jpeg, image/webp" multiple={!isReferenceMode} />
+            <input type="file" ref={faceInputRef} onChange={handleFaceFileChange} className="hidden" accept="image/png, image/jpeg, image/webp" />
         </div>
     );
   }

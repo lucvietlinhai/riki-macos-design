@@ -6,6 +6,7 @@ import { useTheme } from '../theme';
 import { analyzeStoryToScenes, generateStorySceneImage, generateSceneVideo } from '../services/geminiService';
 import { VideoIcon, PlayIcon } from '../constants';
 import { characters } from '../data/characters';
+import { fetchImageAsBase64, resolveAssetPath } from '../utils/imageLoader';
 
 interface StoryArcTabProps {
   state: StoryArcState;
@@ -70,8 +71,11 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
 
     try {
       const character = characters.find(c => c.id === characterId)!;
-      const characterImage: ImageFile = { base64: character.body, mimeType: 'image/png' };
-      const faceReference: ImageFile = { base64: character.face, mimeType: 'image/png' };
+      const bodyBase64 = await fetchImageAsBase64(character.body);
+      const faceBase64 = await fetchImageAsBase64(character.face);
+      
+      const characterImage: ImageFile = { base64: bodyBase64, mimeType: 'image/png' };
+      const faceReference: ImageFile = { base64: faceBase64, mimeType: 'image/png' };
 
       const base64 = await generateStorySceneImage(
         scene,
@@ -246,7 +250,7 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
                             className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-slate-50 border-slate-200'} transition-all`}
                         >
                             <div className="flex items-center gap-3">
-                                <img src={characters.find(c => c.id === characterId)?.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-800" alt="Mascot" />
+                                <img src={resolveAssetPath(characters.find(c => c.id === characterId)?.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-800" alt="Mascot" />
                                 <span className={`text-sm font-bold uppercase ${isDark ? 'text-zinc-200' : 'text-slate-700'}`}>{characters.find(c => c.id === characterId)?.name}</span>
                             </div>
                             <SettingsIcon className="w-4 h-4 opacity-40" />
@@ -259,7 +263,7 @@ export const StoryArcTab: React.FC<StoryArcTabProps> = ({
                                         onClick={() => { onCharacterChange(char.id); setShowCharacterPopover(false); }}
                                         className={`flex items-center gap-3 p-2 rounded-lg w-full text-left transition-colors ${characterId === char.id ? `${accentClass} text-white` : 'hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300'}`}
                                     >
-                                        <img src={char.face || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
+                                        <img src={resolveAssetPath(char.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
                                         <span className="text-sm font-semibold">{char.name}</span>
                                     </button>
                                 ))}

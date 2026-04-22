@@ -1,0 +1,11 @@
+    "node_modules/@protobufjs/fetch": {
+      "resolved": "https://registry.npmjs.org/@protobufjs/fetch/-/fetch-1.1.0.tgz",
+    "node_modules/fetch-blob": {
+      "resolved": "https://registry.npmjs.org/fetch-blob/-/fetch-blob-3.2.0.tgz",
+        "fetch-blob": "^3.1.2"
+        "node-fetch": "^3.3.2"
+    "node_modules/node-fetch": {
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-3.3.2.tgz",
+        "fetch-blob": "^3.1.4",
+        "url": "https://opencollective.com/node-fetch"
+        "@protobufjs/fetch": "^1.1.0",

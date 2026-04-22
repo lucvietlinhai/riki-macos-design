@@ -1,0 +1,11 @@
+./node_modules/@google/genai/dist/index.cjs
+./node_modules/@google/genai/dist/node/index.cjs
+./node_modules/@google/genai/dist/node/index.mjs.map
+./node_modules/@google/genai/dist/node/index.mjs
+./node_modules/@google/genai/dist/index.mjs.map
+./node_modules/@google/genai/dist/web/index.mjs.map
+./node_modules/@google/genai/dist/web/index.mjs
+./node_modules/@google/genai/dist/index.mjs
+./node_modules/node-fetch/README.md
+./node_modules/.vite/deps/@google_genai.js.map
+./node_modules/.vite/deps/@google_genai.js

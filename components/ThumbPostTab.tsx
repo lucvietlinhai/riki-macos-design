@@ -4,6 +4,7 @@ import { useI18n, Language } from '../i18n';
 import type { CharacterId, GeneratedImage, ImageFile, AIModel } from '../types';
 import { generateThumbPostImages } from '../services/geminiService';
 import { characters } from '../data/characters';
+import { fetchImageAsBase64, resolveAssetPath } from '../utils/imageLoader';
 import { LightboxModal } from './LightboxModal';
 import { ImageEditorModal } from './ImageEditorModal';
 import { ThumbPostControls } from './ThumbPostControls';
@@ -110,12 +111,15 @@ export const ThumbPostTab: React.FC<ThumbPostTabProps> = (props) => {
         setIsLoading(true);
         setError(null);
         
-        const bodyMimeType = selectedCharacter.body.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-        const faceMimeType = selectedCharacter.face.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-        const characterImage: ImageFile = { base64: selectedCharacter.body, mimeType: bodyMimeType };
-        const faceReference: ImageFile = { base64: selectedCharacter.face, mimeType: faceMimeType };
-        
         try {
+            const bodyBase64 = await fetchImageAsBase64(selectedCharacter.body);
+            const faceBase64 = await fetchImageAsBase64(selectedCharacter.face);
+            
+            const bodyMimeType = bodyBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+            const faceMimeType = faceBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+            const characterImage: ImageFile = { base64: bodyBase64, mimeType: bodyMimeType };
+            const faceReference: ImageFile = { base64: faceBase64, mimeType: faceMimeType };
+            
             const results = await generateThumbPostImages(characterImage, faceReference, characterId, postContent, model, language, includeText);
             const newImages = results.map((base64, index) => ({
                 id: `thumb_${Date.now()}_${index}`,

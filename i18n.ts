@@ -95,6 +95,11 @@ export const translations = {
     remixOptionsLabel: 'Tùy chọn Remix',
     keepBackground: 'Giữ nguyên bối cảnh gốc',
     keepPose: 'Giữ nguyên tư thế & bố cục',
+    humanFaceLabel: 'Tải ảnh mặt thật',
+    uploadFace: 'Chọn ảnh từ máy tính',
+    changeFace: 'Thay mặt',
+    hybridDesc: 'AI chuyển khuôn mặt người thật sang phong cách hoạt hình Rikimo',
+    hybridNote: 'Nhận diện và vẽ lại khuôn mặt theo phong cách linh vật',
     
     // Validation Errors
     confirmClearData: 'Bạn có chắc chắn muốn xóa bộ nhớ lưu trữ hệ thống? Các hình ảnh tạo ra trên phiên này sẽ bị mất để tối ưu bộ nhớ.',

@@ -5,7 +5,7 @@ import { translations, Language } from "../i18n";
 import { characters } from '../data/characters';
 import { fetchImageAsBase64 } from '../utils/imageLoader';
 
-const loadAdvancedCharacterSheets = async (characterId: string): Promise<any[]> => {
+const loadAdvancedCharacterSheets = async (characterId: string, ignoreFaceRefs: boolean = false): Promise<any[]> => {
     const selectedCharacter = characters.find(c => c.id === characterId);
     if (!selectedCharacter) return [];
     
@@ -16,19 +16,19 @@ const loadAdvancedCharacterSheets = async (characterId: string): Promise<any[]> 
             const b64 = await fetchImageAsBase64(selectedCharacter.turnaroundSheet);
             const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
             const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
-            parts.push({ text: "REFERENCE (Turnaround & Body Consistency - Must perfectly adhere to this structural design in all angles):" });
+            parts.push({ text: "REFERENCE (Body structure & proportions - Follow this for the body):" });
             parts.push({ inlineData: { data: base64Data, mimeType } });
         } catch (e) {
             console.error("Failed to load turnaround sheet", e);
         }
     }
     
-    if (selectedCharacter.expressionSheet) {
+    if (selectedCharacter.expressionSheet && !ignoreFaceRefs) {
         try {
             const b64 = await fetchImageAsBase64(selectedCharacter.expressionSheet);
             const base64Data = b64.startsWith('data:') ? b64.split(',')[1] : b64;
             const mimeType = b64.startsWith('data:') ? b64.split(';')[0].split(':')[1] : 'image/jpeg';
-            parts.push({ text: "REFERENCE (Expression & Face Consistency - Must follow these facial states for specific emotions):" });
+            parts.push({ text: "REFERENCE (Expression & Face Consistency):" });
             parts.push({ inlineData: { data: base64Data, mimeType } });
         } catch (e) {
             console.error("Failed to load expression sheet", e);
@@ -301,7 +301,8 @@ export const generateMascotImage = async (
     model: AIModel,
     language: Language,
     designMode: DesignMode = 'free',
-    remixSettings: RemixSettings = { keepBackground: false, keepPose: false }
+    remixSettings: RemixSettings = { keepBackground: false, keepPose: false },
+    humanFaceImage?: ImageFile
   ): Promise<GeneratedResult> => {
     const ai = getAIClient();
     const parts: any[] = [];
@@ -311,6 +312,20 @@ export const generateMascotImage = async (
 
     let basePrompt = `TASK: Create a clean 2D flat vector mascot illustration for the character "${characterId}".\n`;
     
+    if (humanFaceImage) {
+        basePrompt += `
+        MODE: CARTOON-HYBRID TRANSFORMATION (Rikimo Style)
+        OBJECTIVE: Redraw the mascot "${characterId}" by replacing its head with a stylized, cartoon version of the person in the "HUMAN FACE REFERENCE".
+        
+        STRICT EXECUTION STEPS:
+        1. FACE TRANSFORMATION: Analyze the human face. Transform its specific geometry, eyes, and features into the exact 2D flat vector illustration style of Rikimo. 
+        2. STYLE MATCH: The new head must use the same bold lines, simplified geometry, and flat coloring seen in "REFERENCE 1 (Mascot Body)". It must NOT look like a real photo.
+        3. BODY PRESERVATION: Use the mascot body, costume, and signature items of ${characterId} from the references.
+        4. COMPLETE OVERRIDE: Do NOT use the original eyes or mouth of ${characterId}. The person's identity from the photo is now the character's face.
+        5. RESULT: A seamless character that has the body of ${characterId} but the recognizable cartoon-face of the uploaded human.
+        `;
+    }
+
     if (designMode === 'concept') {
         // Concept Mode: Generate Character Sheet
         finalAspectRatio = '9:16'; // Force Vertical for ample space
@@ -400,14 +415,21 @@ export const generateMascotImage = async (
     parts.push({ text: basePrompt });
     
     // Labeling for better AI understanding
-    parts.push({ text: "REFERENCE 1 (Mascot Body): Master design for clothing, colors, and proportions. **DO NOT COPY THIS POSE OR ANGLE.**" });
+    parts.push({ text: `REFERENCE 1 (Mascot Body): Master design for clothing, colors, and proportions. ${humanFaceImage ? '**STRICTLY IGNORE THE FACE IN THIS REFERENCE IMAGE.**' : '**DO NOT COPY THIS POSE OR ANGLE.**'}` });
     parts.push(fileToGenerativePart(primaryMascot));
     
-    parts.push({ text: "REFERENCE 2 (Mascot Face): Character's facial structure. **DO NOT COPY THIS EXACT EXPRESSION** (unless it matches the prompt)." });
-    parts.push(fileToGenerativePart(faceReference));
+    if (!humanFaceImage) {
+        parts.push({ text: "REFERENCE 2 (Mascot Face): Character's facial structure. **DO NOT COPY THIS EXACT EXPRESSION** (unless it matches the prompt)." });
+        parts.push(fileToGenerativePart(faceReference));
+    }
     
-    // Inject Advanced Sheets
-    const advancedParts = await loadAdvancedCharacterSheets(characterId);
+    if (humanFaceImage) {
+        parts.push({ text: "HUMAN FACE REFERENCE (HYBRID MODE): Use this real person's face. Stylize it into 2D and merge it onto the mascot body." });
+        parts.push(fileToGenerativePart(humanFaceImage));
+    }
+    
+    // Inject Advanced Sheets (Exclude face-specific sheets if in Hybrid mode)
+    const advancedParts = await loadAdvancedCharacterSheets(characterId, !!humanFaceImage);
     parts.push(...advancedParts);
     
     // Attach additional references
