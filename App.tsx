@@ -6,7 +6,7 @@ import { ResultDisplay } from './components/ResultDisplay';
 import { SketchModal } from './components/SketchModal';
 import { HistoryModal } from './components/HistoryModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
-import { characters } from './data/characters';
+import { characters, rikimoFaceBase64, rikimoBodyBase64 } from './data/characters';
 import { generateMascotImage, editMascotImage } from './services/geminiService';
 import type { ImageFile, BackgroundOption, GeneratedImage, CharacterId, NumVariations, ResultDisplayHandle, AspectRatio, Tab, AIModel, SelectionBox, DesignMode, RemixSettings } from './types';
 import { useI18n } from './i18n';
@@ -156,8 +156,14 @@ const App: React.FC = () => {
       const selectedCharacter = characters.find(c => c.id === characterId);
       if (selectedCharacter) {
         try {
-          const bodyBase64 = await fetchImageAsBase64(selectedCharacter.body);
-          const faceBase64 = await fetchImageAsBase64(selectedCharacter.face);
+          const bodyBase64 = await fetchImageAsBase64(selectedCharacter.body).catch(err => {
+              console.warn("Using fallback for body", err);
+              return rikimoBodyBase64; // Fallback to classic
+          });
+          const faceBase64 = await fetchImageAsBase64(selectedCharacter.face).catch(err => {
+              console.warn("Using fallback for face", err);
+              return rikimoFaceBase64; // Fallback to classic
+          });
           
           const getMimeType = (b64: string) => {
               const match = b64.match(/^data:([^;]+);base64,/);
