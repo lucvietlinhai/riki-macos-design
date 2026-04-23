@@ -73,7 +73,7 @@ export const ThumbPostControls: React.FC<ThumbPostControlsProps> = ({
           <div className="flex items-center gap-2">
             <div className="relative">
                 <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} title={t('chooseCharacter')} className="p-1 text-slate-700 hover:text-slate-900 dark:text-gray-300 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                    <img src={resolveAssetPath(characters.find(c => c.id === characterId)?.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600" alt="Current character" />
+                    <img src={resolveAssetPath(characters.find(c => c.id === characterId)?.face) || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600" alt="Current character" />
                 </button>
                 {showCharacterPopover && (
                     <div ref={characterPopoverRef} className="absolute bottom-full left-0 mb-3 w-40 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-xl shadow-2xl p-2 space-y-2 border border-slate-300/80 dark:border-white/10/80">
@@ -85,10 +85,10 @@ export const ThumbPostControls: React.FC<ThumbPostControlsProps> = ({
                                 className={`flex items-center justify-between p-1.5 rounded-md w-full text-left transition-colors ${characterId === char.id ? (isDark ? 'bg-orange-600 text-white' : 'bg-black text-white') : 'text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
                                 title={char.id === 'hankimo' || char.id === 'rikimi' ? "Đang bảo trì" : ""}
                             >
-                                <div className="flex items-center gap-2">
-                                    <img src={resolveAssetPath(char.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
-                                    <span className={`text-sm font-semibold ${char.id === 'hankimo' || char.id === 'rikimi' ? 'opacity-50' : ''}`}>{char.name}</span>
-                                </div>
+                                    <div className="flex items-center gap-2">
+                                        <img src={resolveAssetPath(char.face) || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
+                                        <span className={`text-sm font-semibold ${char.id === 'hankimo' || char.id === 'rikimi' ? 'opacity-50' : ''}`}>{char.name}</span>
+                                    </div>
                                 {(char.id === 'hankimo' || char.id === 'rikimi') && (
                                     <span className={`text-[8px] font-bold ${isDark ? 'text-orange-500 bg-orange-100 dark:bg-orange-900/40' : 'text-slate-500 bg-slate-100'} px-1.5 py-0.5 rounded uppercase ml-1`}>Bảo trì</span>
                                 )}

@@ -164,6 +164,7 @@ const App: React.FC = () => {
           setFaceReference({ base64: faceBase64, mimeType: faceBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg' });
         } catch (error) {
           console.error("Failed to load character assets:", error);
+          setError(`Failed to load character assets for ${selectedCharacter.name}. Please check the console for details or verify image paths.`);
         }
       }
     };

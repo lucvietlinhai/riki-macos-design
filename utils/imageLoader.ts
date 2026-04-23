@@ -1,8 +1,13 @@
-export const resolveAssetPath = (path: string): string => {
-    if (!path || path.startsWith('data:image') || path.startsWith('http')) {
+export const resolveAssetPath = (path: string | undefined): string | undefined => {
+    if (!path) {
+        return undefined;
+    }
+    
+    if (path.startsWith('data:image') || path.startsWith('http')) {
         return path;
     }
     
+    // Ensure absolute paths from public directory are correctly prefixed with BASE_URL
     if (path.startsWith('/')) {
         const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
         return `${baseUrl}${path}`;
@@ -16,7 +21,7 @@ export const fetchImageAsBase64 = async (src: string): Promise<string> => {
         return src;
     }
     
-    const fetchWithTimeout = async (url: string, timeout = 5000) => {
+    const fetchWithTimeout = async (url: string, timeout = 10000) => {
         const controller = new AbortController();
         const id = setTimeout(() => controller.abort(), timeout);
         try {
@@ -31,7 +36,9 @@ export const fetchImageAsBase64 = async (src: string): Promise<string> => {
 
     const tryFetch = async (url: string) => {
         const response = await fetchWithTimeout(url);
-        if (!response.ok) throw new Error(`Failed to fetch image: ${url} (Status: ${response.status})`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${url} (Status: ${response.status} ${response.statusText})`);
+        }
         const blob = await response.blob();
         
         return new Promise<string>((resolve, reject) => {
@@ -43,29 +50,18 @@ export const fetchImageAsBase64 = async (src: string): Promise<string> => {
                     reject(new Error('FileReader result is not a string'));
                 }
             };
-            reader.onerror = reject;
+            reader.onerror = () => reject(new Error('FileReader failed to read blob'));
             reader.readAsDataURL(blob);
         });
     };
 
+    // Use strictly resolved path without problematic relative fallbacks
+    const targetUrl = resolveAssetPath(src);
     try {
-        // Try resolved path
-        const targetUrl = resolveAssetPath(src);
-        
-        try {
-            return await tryFetch(targetUrl);
-        } catch (initialError) {
-            // Fallback: if it's an absolute path that failed, try it as a relative path
-            if (src.startsWith('/')) {
-                const relativeUrl = src.substring(1);
-                console.warn(`Initial fetch failed for ${targetUrl}, trying fallback to ${relativeUrl}`);
-                return await tryFetch(relativeUrl);
-            }
-            throw initialError;
-        }
+        return await tryFetch(targetUrl);
     } catch (error) {
-        console.error("Error fetching image as base64:", error);
-        // Return a transparent 1x1 pixel gif as a last resort to prevent app crash
-        return "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+        console.error(`[ImageLoader] Error loading ${src} from ${targetUrl}:`, error);
+        // Do not return 1x1 placeholder, throw to let the caller handle it or fail visibly
+        throw error;
     }
 };

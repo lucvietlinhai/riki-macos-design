@@ -294,7 +294,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                             }`}>
                                 {humanFaceImage ? (
                                     <img 
-                                        src={humanFaceImage.base64} 
+                                        src={humanFaceImage.base64 || undefined} 
                                         className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-115" 
                                         alt="Human Face Preview" 
                                     />
@@ -351,7 +351,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
             <div className="flex items-center justify-between">
                 <div className="relative">
                     <button ref={characterButtonRef} onClick={() => setShowCharacterPopover(p => !p)} className="flex items-center gap-2 p-1.5 pr-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                         <img src={resolveAssetPath(characters.find(c => c.id === characterId)?.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
+                         <img src={resolveAssetPath(characters.find(c => c.id === characterId)?.face) || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 object-cover" alt="Current character" />
                          <span className="font-semibold text-sm truncate max-w-[100px]">{characters.find(c => c.id === characterId)?.name}</span>
                     </button>
                      {showCharacterPopover && (
@@ -364,7 +364,7 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                                     title={char.id === 'hankimo' || char.id === 'rikimi' ? "Đang bảo trì" : ""}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <img src={resolveAssetPath(char.face || '')} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
+                                        <img src={resolveAssetPath(char.face) || undefined} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700" alt={char.name} />
                                         <span className={`text-sm font-medium ${char.id === 'hankimo' || char.id === 'rikimi' ? 'opacity-50' : ''}`}>{char.name}</span>
                                     </div>
                                     {(char.id === 'hankimo' || char.id === 'rikimi') && (
