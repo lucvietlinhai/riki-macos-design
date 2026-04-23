@@ -41,7 +41,7 @@ const App: React.FC = () => {
 
   const [primaryMascot, setPrimaryMascot] = useState<ImageFile | null>(null);
   const [faceReference, setFaceReference] = useState<ImageFile | null>(null);
-  const [characterId, setCharacterId] = useState<CharacterId>('rikimo');
+  const [characterId, setCharacterId] = useState<CharacterId>('rikimo-new');
   const [prompt, setPrompt] = useState<string>('');
   const [background, setBackground] = useState<BackgroundOption>('random');
   const [numVariations, setNumVariations] = useState<NumVariations>(1);
