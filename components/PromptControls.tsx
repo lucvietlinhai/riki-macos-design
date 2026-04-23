@@ -264,7 +264,6 @@ export const PromptControls: React.FC<PromptControlsProps> = (props) => {
                 <div className="flex flex-col gap-2.5 group/hybrid px-3 py-4 bg-orange-50/30 dark:bg-orange-500/5 rounded-2xl border border-orange-100 dark:border-orange-500/10 mx-1 mb-4 shadow-sm">
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
-                             <div className="px-1.5 py-0.5 bg-orange-500 text-[8px] font-black text-white rounded uppercase tracking-wider animate-pulse">Hybrid</div>
                             <label className="text-[10px] font-black text-slate-600 dark:text-zinc-300 uppercase tracking-[0.15em] whitespace-nowrap">{t('humanFaceLabel')}</label>
                         </div>
                         {humanFaceImage && (
